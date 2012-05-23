@@ -77,7 +77,8 @@ public class Terminal extends javax.swing.JPanel {
                     0, inputArea.getCaretPosition() - 1)
                     + inputArea.getText().substring(
                     inputArea.getCaretPosition()));
-            String command = inputArea.getText().substring(lastIndexOf(inputArea.getText(), ">") + 1);
+            String command = inputArea.getText().
+                    substring(lastIndexOf(inputArea.getText(), ">") + 1);
             inputArea.setText(inputArea.getText() + "\n" + command + "\n>");
             inputArea.setCaretPosition(inputArea.getText().length());
         }

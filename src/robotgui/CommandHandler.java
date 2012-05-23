@@ -13,4 +13,8 @@ public class CommandHandler {
     public CommandHandler() {
     }
     
+    public void executeCommand (String commandContext, String command) {
+        
+    }
+    
 }
