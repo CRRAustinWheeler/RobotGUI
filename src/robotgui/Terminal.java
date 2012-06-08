@@ -4,16 +4,21 @@
  */
 package robotgui;
 
+import terminalcommands.CommandHandler;
+
 /**
  *
  * @author laptop
  */
 public class Terminal extends javax.swing.JPanel {
+    
+    CommandHandler commandHandler;
 
     /**
      * Creates new form Terminal
      */
     public Terminal() {
+        commandHandler = new CommandHandler();
         initComponents();
         inputArea.setText(">");
     }
@@ -79,7 +84,8 @@ public class Terminal extends javax.swing.JPanel {
                     inputArea.getCaretPosition()));
             String command = inputArea.getText().
                     substring(lastIndexOf(inputArea.getText(), ">") + 1);
-            inputArea.setText(inputArea.getText() + "\n" + command + "\n>");
+            String message = commandHandler.executeCommand(command);
+            inputArea.setText(inputArea.getText() + "\n" + message + ">");
             inputArea.setCaretPosition(inputArea.getText().length());
         }
     }//GEN-LAST:event_inputAreaKeyTyped

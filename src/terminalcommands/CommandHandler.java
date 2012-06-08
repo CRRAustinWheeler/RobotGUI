@@ -14,20 +14,32 @@ public class CommandHandler {
 
     private ArrayList<Command> commands;
 
-    public CommandHandler(ArrayList<Command> commands) {
-        this.commands = commands;
+    public CommandHandler() {
+        commands = new ArrayList<>();
+        commands.add(new Login());
     }
 
     public String executeCommand(String command) {
-
-        return "";
+        String message = "";
+        for (Command com : commands) {
+            if (com.getName().matches(getFirstWord(command))) {
+                message = com.executeCommand(removeFirstWord(command));
+            }
+        }
+        return message;
     }
 
     public static String getFirstWord(String command) {
-        return command.substring(0, command.indexOf(" "));
+        if (command.indexOf(" ") != -1) {
+            return command.substring(0, command.indexOf(" "));
+        }
+        return command;
     }
 
     public static String removeFirstWord(String command) {
-        return command.substring(command.indexOf(" ") + 1);
+        if (command.indexOf(" ") != -1) {
+            return command.substring(command.indexOf(" ") + 1);
+        }
+        return "";
     }
 }
