@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package robotgui;
+package share;
 
 import java.util.Vector;
 
@@ -43,7 +43,7 @@ public class SynchronizedRegisterArray {
         }
     }
 
-    public synchronized Vector updateExchange(Vector updates) {
+    public synchronized Vector exchangeUpdates(Vector updates) {
         for (int i = 0; i < updates.size(); i++) {
             Register register = ((Register) updates.elementAt(i));
             if (indexOf(register, updateQueue) == -1) {
@@ -69,14 +69,12 @@ public class SynchronizedRegisterArray {
         return -1;
     }
 
-    private class Register {
-
-        String name;
-        double val;
-
-        public Register(String name, double val) {
-            this.name = name;
-            this.val = val;
+    public synchronized void resynchronize() {
+        updateQueue = new Vector(registers.size());
+        for (int i = 0; i < registers.size(); i++) {
+            updateQueue.addElement(new Register(
+                    ((Register)registers.elementAt(i)).name,
+                    ((Register)registers.elementAt(i)).val));
         }
     }
 }
