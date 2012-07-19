@@ -5,6 +5,8 @@
 package share;
 
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,13 +17,16 @@ public class CommunicationsThread implements Runnable {
     Thread thread;
     SimpleSock sock;
     SynchronizedRegisterArray synchronizedRegisterArray;
+    DataStreamingModule dataStreamingModule;
 
     public CommunicationsThread(SimpleSock sock,
-            SynchronizedRegisterArray synchronizedRegisterArray) {
+            SynchronizedRegisterArray synchronizedRegisterArray,
+            DataStreamingModule dataStreamingModule) {
         thread = new Thread(this);
         thread.start();
         this.sock = sock;
         this.synchronizedRegisterArray = synchronizedRegisterArray;
+        this.dataStreamingModule = dataStreamingModule;
     }
 
     public void run() {
@@ -31,11 +36,21 @@ public class CommunicationsThread implements Runnable {
                     sendRegisterArrayUpdates(sock,
                             synchronizedRegisterArray.exchangeUpdates(
                             new Vector()));
+                    sendStreamUpdates(sock,
+                            dataStreamingModule.exchangeUpdates(
+                            new Vector()));
+                    sock.flush();
                 }
                 while (true) {
-                    sendRegisterArrayUpdates(sock, 
-                            synchronizedRegisterArray.exchangeUpdates(
-                            getRegisterArrayUpdates(sock)));
+                    Vector arrayUpdates = getRegisterArrayUpdates(sock);
+                    Vector streamUpdates = getStreamUpdates(sock);
+                    arrayUpdates = synchronizedRegisterArray.
+                            exchangeUpdates(arrayUpdates);
+                    streamUpdates = dataStreamingModule.
+                            exchangeUpdates(streamUpdates);
+                    sendRegisterArrayUpdates(sock, arrayUpdates);
+                    sendStreamUpdates(sock, streamUpdates);
+                    sock.flush();
                 }
             } catch (ConnectionResetException cre) {
                 synchronizedRegisterArray.resynchronize();
@@ -60,6 +75,31 @@ public class CommunicationsThread implements Runnable {
         for (int i = 0; i < updates.size(); i++) {
             sock.writeString(((Register) updates.elementAt(i)).name);
             sock.writeDouble(((Register) updates.elementAt(i)).val);
+        }
+    }
+
+    private Vector getStreamUpdates(SimpleSock sock)
+            throws ConnectionResetException {
+        int capacity = sock.readInt();
+        Vector vector = new Vector(capacity);
+        for (int i = 0; i < capacity; i++) {
+            vector.addElement(
+                    new Packet(
+                    sock.readDouble(),
+                    sock.readString(),
+                    sock.readLong() + System.currentTimeMillis()));
+        }
+        return vector;
+    }
+
+    private void sendStreamUpdates(SimpleSock sock, Vector updates)
+            throws ConnectionResetException {
+        sock.writeInt(updates.size());
+        for (int i = 0; i < updates.size(); i++) {
+            sock.writeDouble(((Packet) updates.elementAt(i)).val);
+            sock.writeString(((Packet) updates.elementAt(i)).name);
+            sock.writeLong(((Packet) updates.elementAt(i)).time
+                    - System.currentTimeMillis());
         }
     }
 }

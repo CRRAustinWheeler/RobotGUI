@@ -8,6 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import share.DataStreamingModule;
+import share.SynchronizedRegisterArray;
 
 /**
  *
@@ -15,6 +17,9 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    DataStreamingModule dataStreamingModule;
+    SynchronizedRegisterArray synchronizedRegisterArray;
+    
     /**
      * Creates new form MainWindow
      */
@@ -45,10 +50,12 @@ public class MainWindow extends javax.swing.JFrame {
 
         TabbedPane = new javax.swing.JTabbedPane();
         terminalTab = new robotgui.Terminal();
+        pWMandDIO1 = new robotgui.PWMandDIO();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         TabbedPane.addTab("Terminal", terminalTab);
+        TabbedPane.addTab("PWM and DIO", pWMandDIO1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -65,6 +72,14 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane TabbedPane;
+    private robotgui.PWMandDIO pWMandDIO1;
     private robotgui.Terminal terminalTab;
     // End of variables declaration//GEN-END:variables
+
+    void init(DataStreamingModule dataStreamingModule,
+            SynchronizedRegisterArray synchronizedRegisterArray) {
+        this.dataStreamingModule = dataStreamingModule;
+        this.synchronizedRegisterArray = synchronizedRegisterArray;
+        pWMandDIO1.init(dataStreamingModule, synchronizedRegisterArray);
+    }
 }

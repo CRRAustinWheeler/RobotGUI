@@ -8,7 +8,7 @@ package share;
  *
  * @author laptop
  */
-class ConnectionResetException extends Exception {
+public class ConnectionResetException extends Exception {
 
     public ConnectionResetException() {
     }

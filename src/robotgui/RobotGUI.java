@@ -4,16 +4,34 @@
  */
 package robotgui;
 
+import share.CommunicationsThread;
+import share.DataStreamingModule;
+import share.SynchronizedRegisterArray;
+
 /**
  *
  * @author laptop
  */
 public class RobotGUI {
 
+    static MainWindow mainWindow;
+    static DataStreamingModule dataStreamingModule;
+    static ServerSock serverSock;
+    static CommunicationsThread communicationsThread;
+    static SynchronizedRegisterArray synchronizedRegisterArray;
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new MainWindow();
+        dataStreamingModule = new DataStreamingModule();
+        serverSock = new ServerSock();
+        synchronizedRegisterArray = new SynchronizedRegisterArray();
+        communicationsThread = new CommunicationsThread(
+                serverSock,
+                synchronizedRegisterArray,
+                dataStreamingModule);
+        mainWindow = new MainWindow();
+        mainWindow.init(dataStreamingModule, synchronizedRegisterArray);
     }
 }
