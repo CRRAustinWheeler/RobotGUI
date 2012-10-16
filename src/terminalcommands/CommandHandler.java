@@ -15,7 +15,7 @@ public class CommandHandler {
     private ArrayList<Command> commands;
 
     public CommandHandler() {
-        commands = new ArrayList<>();
+        commands = new ArrayList();
         commands.add(new Login());
     }
 

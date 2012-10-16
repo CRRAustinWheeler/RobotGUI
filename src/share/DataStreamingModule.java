@@ -38,6 +38,9 @@ public class DataStreamingModule {
     }
 
     synchronized void sendPacket(Packet packet) {
+        if (updateQueue.size()>255) {
+            return;
+        }
         updateQueue.addElement(packet);
     }
 

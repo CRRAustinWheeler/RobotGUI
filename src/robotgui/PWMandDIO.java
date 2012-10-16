@@ -15,7 +15,7 @@ import share.SynchronizedRegisterArray;
  *
  * @author laptop
  */
-public class PWMandDIO extends javax.swing.JPanel implements Runnable{
+public class PWMandDIO extends javax.swing.JPanel implements Runnable {
 
     DataStreamingModule dataStreamingModule;
     SynchronizedRegisterArray synchronizedRegisterArray;
@@ -29,10 +29,10 @@ public class PWMandDIO extends javax.swing.JPanel implements Runnable{
         thread = new Thread(this);
         thread.start();
     }
-    
+
     @Override
     public void run() {
-        while (true) {            
+        while (true) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
@@ -143,10 +143,40 @@ public class PWMandDIO extends javax.swing.JPanel implements Runnable{
                 graph1.removeAllStreams();
                 graph1.addStream(
                         dataStreamingModule.getStream("PWM" + selection),
-                        Color.GREEN, 0, 1, false);
+                        Color.GREEN, 0.5, 0.5, false);
                 return;
             }
-            if (selection == 10) {
+            if (selection == 10) {//DIO 0-6
+                graph1.removeAllStreams();
+                double scale = 1d / 21d;
+                for (int i = 0; i < 7; i++) {
+                    graph1.addStream(
+                            dataStreamingModule.getStream("DIOS" + i),
+                            Color.ORANGE, scale + (scale*3*i), scale, true);
+                }
+                return;
+            }
+            if (selection == 11) {//DIO 7-14
+                graph1.removeAllStreams();
+                double scale = 1d / 21d;
+                for (int i = 0; i < 7; i++) {
+                    graph1.addStream(
+                            dataStreamingModule.getStream("DIOS" + (i+7)),
+                            Color.ORANGE, scale + (scale*3*i), scale, true);
+                }
+                return;
+            }
+            if (selection == 12) {//Relays 0-7
+                graph1.removeAllStreams();
+                double scale = 1d / 36d;
+                for (int i = 0; i < 8; i++) {
+                    graph1.addStream(
+                            dataStreamingModule.getStream("RelayR" + i),
+                            Color.RED, scale + (scale*4*i), -scale, true);
+                    graph1.addStream(
+                            dataStreamingModule.getStream("RelayF" + i),
+                            Color.GREEN, (scale*2) + (scale*4*i), scale, true);
+                }
             }
         }
     }//GEN-LAST:event_jComboBox1ActionPerformed

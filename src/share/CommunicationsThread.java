@@ -22,11 +22,11 @@ public class CommunicationsThread implements Runnable {
     public CommunicationsThread(SimpleSock sock,
             SynchronizedRegisterArray synchronizedRegisterArray,
             DataStreamingModule dataStreamingModule) {
-        thread = new Thread(this);
-        thread.start();
         this.sock = sock;
         this.synchronizedRegisterArray = synchronizedRegisterArray;
         this.dataStreamingModule = dataStreamingModule;
+        thread = new Thread(this);
+        thread.start();
     }
 
     public void run() {

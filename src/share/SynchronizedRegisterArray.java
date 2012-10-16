@@ -20,7 +20,7 @@ public class SynchronizedRegisterArray {
         updateQueue = new Vector();
     }
 
-    public synchronized void setRegister(String name, int val) {
+    public synchronized void setRegister(String name, double val) {
         Register register = new Register(name, val);
         int index = indexOf(register, registers);
         if (index != -1) {
@@ -73,8 +73,24 @@ public class SynchronizedRegisterArray {
         updateQueue = new Vector(registers.size());
         for (int i = 0; i < registers.size(); i++) {
             updateQueue.addElement(new Register(
-                    ((Register)registers.elementAt(i)).name,
-                    ((Register)registers.elementAt(i)).val));
+                    ((Register) registers.elementAt(i)).name,
+                    ((Register) registers.elementAt(i)).val));
         }
+    }
+
+    public synchronized double get(String registerName) {
+        int i = indexOf(new Register(registerName, 0), registers);
+        if (i != -1) {
+            return ((Register) registers.elementAt(i)).val;
+        }
+        return 0;
+    }
+
+    public synchronized String[] getRegisterNames() {
+        String[] names = new String[registers.size()];
+        for (int i = 0; i < registers.size(); i++) {
+            names[i] = ((Register) registers.elementAt(i)).name;
+        }
+        return names;
     }
 }

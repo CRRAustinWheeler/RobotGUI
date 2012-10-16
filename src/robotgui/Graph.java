@@ -28,7 +28,7 @@ public class Graph extends javax.swing.JPanel implements Runnable {
      */
     public Graph() {
         initComponents();
-        streams = new ArrayList<>();
+        streams = new ArrayList();
         thread = new Thread(this);
         thread.start();
     }
@@ -61,7 +61,7 @@ public class Graph extends javax.swing.JPanel implements Runnable {
     }
 
     public void removeAllStreams() {
-        streams = new ArrayList<>();
+        streams = new ArrayList();
     }
 
     public void setTime(long time) {
@@ -75,9 +75,9 @@ public class Graph extends javax.swing.JPanel implements Runnable {
         for (GStream gStream : streams) {
             if (gStream.drawZero) {
                 c = new Color(
-                        (gStream.color.getRed() + 255) / 2,
-                        (gStream.color.getGreen() + 255) / 2,
-                        (gStream.color.getBlue() + 255) / 2);
+                        (gStream.color.getRed() + 2048) / 9,
+                        (gStream.color.getGreen() + 2048) / 9,
+                        (gStream.color.getBlue() + 2048) / 9);
                 g.setColor(c);
                 paintLine(
                         System.currentTimeMillis(),
@@ -138,7 +138,7 @@ public class Graph extends javax.swing.JPanel implements Runnable {
 
     private class GStream {
 
-        public GStream(DataStream stream, double center, double scale, Color color, boolean drawZero) {
+        private GStream(DataStream stream, double center, double scale, Color color, boolean drawZero) {
             this.stream = stream;
             this.center = center;
             this.scale = scale;
@@ -146,7 +146,7 @@ public class Graph extends javax.swing.JPanel implements Runnable {
             this.drawZero = drawZero;
         }
 
-        public GStream() {
+        private GStream() {
         }
         DataStream stream;
         double center;

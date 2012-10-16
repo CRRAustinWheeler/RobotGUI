@@ -74,6 +74,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized long readLong()
             throws ConnectionResetException {
         if (connection == null) {
@@ -87,6 +88,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized int readInt()
             throws ConnectionResetException {
         if (connection == null) {
@@ -100,6 +102,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized double readDouble()
             throws ConnectionResetException {
         if (connection == null) {
@@ -113,6 +116,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized char readChar()
             throws ConnectionResetException {
         if (connection == null) {
@@ -127,6 +131,7 @@ public class ServerSock implements SimpleSock {
 
     }
 
+    @Override
     public synchronized byte readByte()
             throws ConnectionResetException {
         if (connection == null) {
@@ -140,6 +145,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized void writeLong(long l)
             throws ConnectionResetException {
         if (connection == null) {
@@ -153,6 +159,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized void writeInt(int i)
             throws ConnectionResetException {
         if (connection == null) {
@@ -166,6 +173,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized void writeDouble(double d)
             throws ConnectionResetException {
         if (connection == null) {
@@ -179,6 +187,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized void writeChar(char c)
             throws ConnectionResetException {
         if (connection == null) {
@@ -192,6 +201,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized void writeByte(byte b)
             throws ConnectionResetException {
         if (connection == null) {
@@ -205,6 +215,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized String readString()
             throws ConnectionResetException {
         if (connection == null) {
@@ -218,6 +229,7 @@ public class ServerSock implements SimpleSock {
         return result;
     }
 
+    @Override
     public synchronized void writeString(String s)
             throws ConnectionResetException {
         if (connection == null) {
@@ -229,6 +241,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public synchronized void flush() throws ConnectionResetException {
         if (connection == null) {
             reconnect();
@@ -241,6 +254,7 @@ public class ServerSock implements SimpleSock {
         }
     }
 
+    @Override
     public boolean isServer() {
         return true;
     }
