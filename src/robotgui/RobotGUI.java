@@ -24,6 +24,7 @@ public class RobotGUI {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        new virtualrobot.VirtualRobot();
         dataStreamingModule = new DataStreamingModule();
         serverSock = new ServerSock();
         synchronizedRegisterArray = new SynchronizedRegisterArray();
