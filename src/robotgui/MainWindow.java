@@ -52,14 +52,16 @@ public class MainWindow extends javax.swing.JFrame {
         terminalTab = new robotgui.Terminal();
         pWMandDIO1 = new robotgui.PWMandDIO();
         pID1 = new robotgui.PID();
-        sRA1 = new robotgui.SRA();
+        sRAandDSM1 = new robotgui.SRAandDSM();
+        cAN1 = new robotgui.CAN();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         tabbedPane.addTab("Terminal", terminalTab);
         tabbedPane.addTab("PWM and DIO", pWMandDIO1);
         tabbedPane.addTab("PID", pID1);
-        tabbedPane.addTab("SRA", sRA1);
+        tabbedPane.addTab("SRA and DSM", sRAandDSM1);
+        tabbedPane.addTab("CAN", cAN1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -75,9 +77,10 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private robotgui.CAN cAN1;
     private robotgui.PID pID1;
     private robotgui.PWMandDIO pWMandDIO1;
-    private robotgui.SRA sRA1;
+    private robotgui.SRAandDSM sRAandDSM1;
     private javax.swing.JTabbedPane tabbedPane;
     private robotgui.Terminal terminalTab;
     // End of variables declaration//GEN-END:variables
@@ -88,6 +91,6 @@ public class MainWindow extends javax.swing.JFrame {
         this.synchronizedRegisterArray = synchronizedRegisterArray;
         pWMandDIO1.init(dataStreamingModule, synchronizedRegisterArray);
         pID1.init(dataStreamingModule, synchronizedRegisterArray);
-        sRA1.init(synchronizedRegisterArray, dataStreamingModule);
+        sRAandDSM1.init(synchronizedRegisterArray, dataStreamingModule);
     }
 }
