@@ -88,20 +88,21 @@ public class Graph extends javax.swing.JPanel implements Runnable {
         }
         Packet oldPacket;
         for (GStream gStream : streams) {
-            oldPacket = gStream.stream.getLastPacket();
-            for (int i = 1; i < gStream.stream.getPackets().length
-                    && oldPacket.time - System.currentTimeMillis()
-                    > graphTime; i++) {
-                g.setColor(gStream.color);
-                paintLine(
-                        oldPacket.time,
-                        (oldPacket.val
-                        * gStream.scale) + gStream.center,
-                        gStream.stream.getPackets()[i].time,
-                        (gStream.stream.getPackets()[i].val
-                        * gStream.scale) + gStream.center, g);
-                oldPacket = gStream.stream.getPackets()[i];
-            }
+                oldPacket = gStream.stream.getLastPacket();
+                for (int i = 1; i < gStream.stream.getPackets().length
+                        && oldPacket.time - System.currentTimeMillis()
+                        > graphTime; i++) {
+                    g.setColor(gStream.color);
+                    paintLine(
+                            oldPacket.time,
+                            (oldPacket.val
+                            * gStream.scale) + gStream.center,
+                            gStream.stream.getPackets()[i].time,
+                            (gStream.stream.getPackets()[i].val
+                            * gStream.scale) + gStream.center, g);
+                    oldPacket = gStream.stream.getPackets()[i];
+                }
+            
         }
     }
 

@@ -15,7 +15,7 @@ import share.SynchronizedRegisterArray;
  *
  * @author laptop
  */
-public class PWMandDIO extends javax.swing.JPanel implements Runnable {
+public class PWMandDIO extends javax.swing.JPanel implements DSMListener {
 
     DataStreamingModule dataStreamingModule;
     SynchronizedRegisterArray synchronizedRegisterArray;
@@ -26,29 +26,21 @@ public class PWMandDIO extends javax.swing.JPanel implements Runnable {
      */
     public PWMandDIO() {
         initComponents();
-        thread = new Thread(this);
-        thread.start();
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(PWMandDIO.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            refresh();
-        }
     }
 
     public void init(DataStreamingModule dataStreamingModule,
             SynchronizedRegisterArray synchronizedRegisterArray) {
         this.dataStreamingModule = dataStreamingModule;
         this.synchronizedRegisterArray = synchronizedRegisterArray;
+        dataStreamingModule.addDSMListener(this);
     }
 
-    public void refresh() {
+    @Override
+    public void alertToNewStreams() {
+    }
+    
+    @Override
+    public void alertToDSMUpdates() {
         if (dataStreamingModule != null) {
             for (int i = 0; i < 10; i++) {
                 DataStream dataStream =
@@ -99,7 +91,7 @@ public class PWMandDIO extends javax.swing.JPanel implements Runnable {
         graph1.setLayout(graph1Layout);
         graph1Layout.setHorizontalGroup(
             graph1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 378, Short.MAX_VALUE)
         );
         graph1Layout.setVerticalGroup(
             graph1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -118,64 +110,84 @@ public class PWMandDIO extends javax.swing.JPanel implements Runnable {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboBox1, 0, 408, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(iOpanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBox1, 0, 378, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(iOpanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(iOpanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 346, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(iOpanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         int selection = jComboBox1.getSelectedIndex();
         if (dataStreamingModule != null) {
-            if (selection > -1 && selection < 10
-                    && dataStreamingModule.getStream(
-                    "PWM" + selection) != null) {
+            if (selection > -1 && selection < 10) {
                 graph1.removeAllStreams();
-                graph1.addStream(
-                        dataStreamingModule.getStream("PWM" + selection),
-                        Color.GREEN, 0.5, 0.5, false);
+                if (dataStreamingModule.getStream(
+                    "PWM" + selection) != null) {
+                    graph1.addStream(
+                            dataStreamingModule.getStream("PWM" + selection),
+                            Color.GREEN, 0.5, 0.5, false);
+                }
                 return;
             }
             if (selection == 10) {//DIO 0-6
                 graph1.removeAllStreams();
                 double scale = 1d / 21d;
+                DataStream ds;
                 for (int i = 0; i < 7; i++) {
-                    graph1.addStream(
-                            dataStreamingModule.getStream("DIOS" + i),
-                            Color.ORANGE, scale + (scale*3*i), scale, true);
+                    ds = dataStreamingModule.getStream("DIOS" + i);
+                    if (ds != null) {
+                        graph1.addStream(
+                                ds, Color.ORANGE, scale + (scale * 3 * i),
+                                scale, true);
+                    }
                 }
                 return;
             }
             if (selection == 11) {//DIO 7-14
                 graph1.removeAllStreams();
                 double scale = 1d / 21d;
+                DataStream ds;
                 for (int i = 0; i < 7; i++) {
-                    graph1.addStream(
-                            dataStreamingModule.getStream("DIOS" + (i+7)),
-                            Color.ORANGE, scale + (scale*3*i), scale, true);
+                    ds = dataStreamingModule.getStream("DIOS" + (i + 7));
+                    if (ds != null) {
+                        graph1.addStream(
+                                ds, Color.ORANGE, scale + (scale * 3 * i),
+                                scale, true);
+                    }
                 }
                 return;
             }
             if (selection == 12) {//Relays 0-7
                 graph1.removeAllStreams();
                 double scale = 1d / 36d;
+                DataStream dsr, dsf;
                 for (int i = 0; i < 8; i++) {
-                    graph1.addStream(
-                            dataStreamingModule.getStream("RelayR" + i),
-                            Color.RED, scale + (scale*4*i), -scale, true);
-                    graph1.addStream(
-                            dataStreamingModule.getStream("RelayF" + i),
-                            Color.GREEN, (scale*2) + (scale*4*i), scale, true);
+                    dsr = dataStreamingModule.getStream("RelayR" + i);
+                    dsf = dataStreamingModule.getStream("RelayF" + i);
+                    if (dsr != null && dsf != null) {
+                        graph1.addStream(
+                                dsr, Color.RED, scale + (scale * 4 * i),
+                                -scale, true);
+                        graph1.addStream(
+                                dsf, Color.GREEN, (scale * 2) + (scale * 4 * i),
+                                scale, true);
+                    }
                 }
             }
         }

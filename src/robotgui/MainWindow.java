@@ -36,6 +36,7 @@ public class MainWindow extends javax.swing.JFrame {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
         initComponents();
+        setSize(1024, 350);
         setVisible(true);
     }
 

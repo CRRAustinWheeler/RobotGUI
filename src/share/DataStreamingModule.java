@@ -5,6 +5,7 @@
 package share;
 
 import java.util.Vector;
+import robotgui.DSMListener;
 
 /**
  *
@@ -14,10 +15,20 @@ public class DataStreamingModule {
 
     private Vector streams;
     private Vector updateQueue;
+    private Vector DSMListeners;
 
     public DataStreamingModule() {
         streams = new Vector();
         updateQueue = new Vector();
+        DSMListeners = new Vector();
+    }
+
+    public void addDSMListener(DSMListener listener) {
+        DSMListeners.add(listener);
+    }
+
+    public boolean removeDSMListener(DSMListener listener) {
+        return DSMListeners.remove(listener);
     }
 
     public synchronized String[] getStreamNames() {
@@ -38,7 +49,7 @@ public class DataStreamingModule {
     }
 
     synchronized void sendPacket(Packet packet) {
-        if (updateQueue.size()>255) {
+        if (updateQueue.size() > 2048) {
             return;
         }
         updateQueue.addElement(packet);
@@ -49,6 +60,9 @@ public class DataStreamingModule {
     }
 
     synchronized Vector exchangeUpdates(Vector updates) {
+
+        //init flag
+        boolean newStream = false;
 
         //process updates
         for (int i = 0; i < updates.size(); i++) {
@@ -64,7 +78,14 @@ public class DataStreamingModule {
                 //...make a new stream
                 streams.addElement(
                         new DataStream((Packet) updates.elementAt(i)));
+                //flag the new stream
+                newStream = true;
             }
+        }
+
+        //notify listeners
+        for (int i = 0; i < DSMListeners.size(); i++) {
+            
         }
 
         //return outgoing updates
