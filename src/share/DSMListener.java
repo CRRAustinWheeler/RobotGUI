@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package robotgui;
+package share;
 
 import java.util.Vector;
 

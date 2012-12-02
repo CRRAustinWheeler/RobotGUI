@@ -15,10 +15,11 @@
  */
 package robotgui;
 
+import share.DSMListener;
+import share.SRAListener;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Vector;
 import share.DataStreamingModule;
 import share.SynchronizedRegisterArray;
 
@@ -26,12 +27,11 @@ import share.SynchronizedRegisterArray;
  *
  * @author laptop
  */
-public class PID extends javax.swing.JPanel implements Runnable {
+public class PID extends javax.swing.JPanel implements DSMListener, SRAListener {
 
     DataStreamingModule dataStreamingModule;
     SynchronizedRegisterArray synchronizedRegisterArray;
     ArrayList<String> listItems = new ArrayList();
-    Thread thread;
 
     /**
      * Creates new form PID
@@ -40,28 +40,21 @@ public class PID extends javax.swing.JPanel implements Runnable {
         initComponents();
     }
 
-    public void init(DataStreamingModule dataStreamingModule,
+    public synchronized void init(DataStreamingModule dataStreamingModule,
             SynchronizedRegisterArray synchronizedRegisterArray) {
+        jList1.setListData(new String[0]);
         this.dataStreamingModule = dataStreamingModule;
         this.synchronizedRegisterArray = synchronizedRegisterArray;
-        jList1.setListData(new String[0]);
-        thread = new Thread(this);
-        thread.start();
+        dataStreamingModule.addDSMListener(this);
+        synchronizedRegisterArray.addSRAListener(this);
     }
 
     @Override
-    public void run() {
-        while (true) {
-            refresh();
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(PID.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+    public synchronized void alertToDSMUpdates() {
     }
 
-    private void refresh() {
+    @Override
+    public synchronized void alertToNewStreams() {
         ArrayList<String> list = new ArrayList();
         String[] names = dataStreamingModule.getStreamNames();
         for (int i = 0; i < names.length; i++) {
@@ -80,9 +73,16 @@ public class PID extends javax.swing.JPanel implements Runnable {
         }
         if (list.size() > 0) {
             listItems.addAll(list);
+            int index = jList1.getSelectedIndex();
             jList1.setListData(listItems.toArray());
+            if (index != -1) {
+                jList1.setSelectedIndex(index);
+            }
         }
+    }
 
+    @Override
+    public void alertToSRAUpdates() {
         if (jList1.getSelectedIndex() != -1) {
             String string;
             if (synchronizedRegisterArray.get("PIDCP"

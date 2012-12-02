@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package robotgui;
+package share;
 
 import java.util.Vector;
 
@@ -11,5 +11,5 @@ import java.util.Vector;
  * @author laptop
  */
 public interface SRAListener {
-    public void sendRegisterUpdates(Vector updates);
+    public void alertToSRAUpdates();
 }

@@ -4,9 +4,8 @@
  */
 package robotgui;
 
+import share.DSMListener;
 import java.awt.Color;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import share.DataStream;
 import share.DataStreamingModule;
 import share.SynchronizedRegisterArray;
@@ -95,7 +94,7 @@ public class PWMandDIO extends javax.swing.JPanel implements DSMListener {
         );
         graph1Layout.setVerticalGroup(
             graph1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 292, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PWM1", "PWM2", "PWM3", "PWM4", "PWM5", "PWM6", "PWM7", "PWM8", "PWM9", "PWM10", "DIO1-7", "DIO8-14", "Relays" }));

@@ -5,7 +5,6 @@
 package share;
 
 import java.util.Vector;
-import robotgui.SRAListener;
 
 /**
  *
@@ -46,20 +45,23 @@ public class SynchronizedRegisterArray {
         }
     }
 
-    public void addSRAListener(SRAListener listener) {
+    public synchronized void addSRAListener(SRAListener listener) {
         SRAListeners.add(listener);
+        if (registers.size() != 0) {
+            listener.alertToSRAUpdates();
+        }
     }
 
-    public boolean removeSRAListener(SRAListener listener) {
+    public synchronized boolean removeSRAListener(SRAListener listener) {
         return SRAListeners.remove(listener);
     }
 
     public synchronized Vector exchangeUpdates(Vector updates) {
-        Vector updatesToBePassedOn = new Vector();
+        //Vector updatesToBePassedOn = new Vector();
         for (int i = 0; i < updates.size(); i++) {
             Register register = ((Register) updates.elementAt(i));
             if (indexOf(register, updateQueue) == -1) {
-                updatesToBePassedOn.add(register);
+                //updatesToBePassedOn.add(register);
                 int index = indexOf(register, registers);
                 if (index != -1) {
                     ((Register) registers.elementAt(index)).val = register.val;
@@ -70,7 +72,7 @@ public class SynchronizedRegisterArray {
         }
         for (int i = 0; i < SRAListeners.size(); i++) {
             SRAListener sral = (SRAListener)SRAListeners.get(i);
-            sral.sendRegisterUpdates(updatesToBePassedOn);
+            sral.alertToSRAUpdates();
         }
         Vector updateQueue = this.updateQueue;
         this.updateQueue = new Vector();
