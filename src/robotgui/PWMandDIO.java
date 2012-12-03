@@ -4,11 +4,11 @@
  */
 package robotgui;
 
-import share.DSMListener;
+import communications.DSMListener;
 import java.awt.Color;
-import share.DataStream;
-import share.DataStreamingModule;
-import share.SynchronizedRegisterArray;
+import communications.DataStream;
+import communications.DataStreamingModule;
+import communications.SynchronizedRegisterArray;
 
 /**
  *

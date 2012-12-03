@@ -7,8 +7,8 @@ package robotgui;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import share.ConnectionResetException;
-import share.SimpleSock;
+import communications.ConnectionResetException;
+import communications.SimpleSock;
 
 /**
  *

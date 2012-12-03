@@ -7,8 +7,8 @@ package robotgui;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import share.DataStreamingModule;
-import share.SynchronizedRegisterArray;
+import communications.DataStreamingModule;
+import communications.SynchronizedRegisterArray;
 
 /**
  *

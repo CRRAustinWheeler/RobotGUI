@@ -4,9 +4,9 @@
  */
 package robotgui;
 
-import share.CommunicationsThread;
-import share.DataStreamingModule;
-import share.SynchronizedRegisterArray;
+import communications.CommunicationsThread;
+import communications.DataStreamingModule;
+import communications.SynchronizedRegisterArray;
 
 /**
  *

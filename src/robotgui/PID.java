@@ -15,13 +15,13 @@
  */
 package robotgui;
 
-import share.DSMListener;
-import share.SRAListener;
+import communications.DSMListener;
+import communications.SRAListener;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Vector;
-import share.DataStreamingModule;
-import share.SynchronizedRegisterArray;
+import communications.DataStreamingModule;
+import communications.SynchronizedRegisterArray;
 
 /**
  *

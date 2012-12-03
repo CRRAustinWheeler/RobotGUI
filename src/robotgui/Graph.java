@@ -9,8 +9,8 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import share.DataStream;
-import share.Packet;
+import communications.DataStream;
+import communications.Packet;
 
 /**
  *
