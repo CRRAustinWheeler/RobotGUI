@@ -4,17 +4,67 @@
  */
 package robotgui;
 
+import communications.DSMListener;
+import communications.DataStreamingModule;
+import communications.SRAListener;
+import communications.SynchronizedRegisterArray;
+import java.awt.Color;
+
 /**
  *
  * @author laptop
  */
-public class CAN extends javax.swing.JPanel {
+public class CAN extends javax.swing.JPanel implements DSMListener, SRAListener {
+
+    private DataStreamingModule dataStreamingModule;
+    private SynchronizedRegisterArray synchronizedRegisterArray;
+    private int[] names;
+    //jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
     /**
      * Creates new form CAN
      */
     public CAN() {
         initComponents();
+    }
+
+    public synchronized void init(DataStreamingModule dataStreamingModule,
+            SynchronizedRegisterArray synchronizedRegisterArray) {
+        this.dataStreamingModule = dataStreamingModule;
+        this.synchronizedRegisterArray = synchronizedRegisterArray;
+        dataStreamingModule.addDSMListener(this);
+        synchronizedRegisterArray.addSRAListener(this);
+    }
+
+    @Override
+    public synchronized void alertToDSMUpdates() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public synchronized void alertToNewStreams() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public synchronized void alertToSRAUpdates() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void refreshGraphs() {
+        if () {
+            graph1.removeAllStreams();
+            graph1.addStream(
+                    dataStreamingModule.getStream("PIDO"
+                    + listItems.get(jList1.getSelectedIndex())),
+                    Color.GREEN, 0.5, 0.4, false);
+            graph1.addStream(
+                    dataStreamingModule.getStream("PIDE"
+                    + listItems.get(jList1.getSelectedIndex())),
+                    Color.RED, 0.5,
+                    0.5 / Double.parseDouble(es.getText()), true);
+        } else {
+        }
     }
 
     /**
@@ -31,7 +81,7 @@ public class CAN extends javax.swing.JPanel {
         firmwareVersion = new javax.swing.JLabel();
         jaguarID = new javax.swing.JLabel();
         setpoint = new javax.swing.JLabel();
-        amperage = new javax.swing.JLabel();
+        current = new javax.swing.JLabel();
         outputVoltage = new javax.swing.JLabel();
         inputVoltage = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
@@ -45,7 +95,7 @@ public class CAN extends javax.swing.JPanel {
 
         setpoint.setText("Setpoint:");
 
-        amperage.setText("Amperage:");
+        current.setText("Current:");
 
         outputVoltage.setText("Output Voltage:");
 
@@ -61,7 +111,7 @@ public class CAN extends javax.swing.JPanel {
                     .addComponent(firmwareVersion)
                     .addComponent(jaguarID)
                     .addComponent(setpoint)
-                    .addComponent(amperage)
+                    .addComponent(current)
                     .addComponent(outputVoltage)
                     .addComponent(inputVoltage))
                 .addGap(0, 67, Short.MAX_VALUE))
@@ -77,21 +127,26 @@ public class CAN extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(setpoint)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(amperage)
+                .addComponent(current)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(outputVoltage)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(inputVoltage)
-                .addGap(0, 87, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout graph1Layout = new javax.swing.GroupLayout(graph1);
         graph1.setLayout(graph1Layout);
         graph1Layout.setHorizontalGroup(
             graph1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 371, Short.MAX_VALUE)
         );
         graph1Layout.setVerticalGroup(
             graph1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -104,11 +159,11 @@ public class CAN extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox1, 0, 371, Short.MAX_VALUE)
-                    .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -119,13 +174,19 @@ public class CAN extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 53, Short.MAX_VALUE))
+                    .addComponent(graph1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel amperage;
+    private javax.swing.JLabel current;
     private javax.swing.JLabel firmwareVersion;
     private robotgui.Graph graph1;
     private javax.swing.JLabel hardwareVersion;

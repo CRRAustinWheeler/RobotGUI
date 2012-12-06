@@ -16,12 +16,11 @@
 package robotgui;
 
 import communications.DSMListener;
+import communications.DataStreamingModule;
 import communications.SRAListener;
+import communications.SynchronizedRegisterArray;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Vector;
-import communications.DataStreamingModule;
-import communications.SynchronizedRegisterArray;
 
 /**
  *

@@ -18,27 +18,28 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jComboBox1" pref="371" max="32767" attributes="0"/>
-                  <Component id="graph1" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Component id="jComboBox1" max="32767" attributes="0"/>
+                  <Component id="jPanel1" max="32767" attributes="0"/>
               </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="graph1" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <Component id="jComboBox1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="graph1" max="32767" attributes="0"/>
+                      <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="53" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="jPanel1" max="32767" attributes="0"/>
+                  <Component id="graph1" alignment="1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -57,7 +58,7 @@
                       <Component id="firmwareVersion" min="-2" max="-2" attributes="0"/>
                       <Component id="jaguarID" min="-2" max="-2" attributes="0"/>
                       <Component id="setpoint" min="-2" max="-2" attributes="0"/>
-                      <Component id="amperage" min="-2" max="-2" attributes="0"/>
+                      <Component id="current" min="-2" max="-2" attributes="0"/>
                       <Component id="outputVoltage" min="-2" max="-2" attributes="0"/>
                       <Component id="inputVoltage" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -76,12 +77,12 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="setpoint" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="amperage" min="-2" max="-2" attributes="0"/>
+                  <Component id="current" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="outputVoltage" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="inputVoltage" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="87" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -107,9 +108,9 @@
             <Property name="text" type="java.lang.String" value="Setpoint:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="amperage">
+        <Component class="javax.swing.JLabel" name="current">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Amperage:"/>
+            <Property name="text" type="java.lang.String" value="Current:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="outputVoltage">
@@ -135,13 +136,16 @@
           </StringArray>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox1ActionPerformed"/>
+      </Events>
     </Component>
     <Container class="robotgui.Graph" name="graph1">
 
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="371" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
