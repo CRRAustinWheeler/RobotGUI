@@ -18,7 +18,7 @@ public class CAN extends javax.swing.JPanel implements DSMListener, SRAListener 
 
     private DataStreamingModule dataStreamingModule;
     private SynchronizedRegisterArray synchronizedRegisterArray;
-    private int[] names;
+    private int[] comboBoxJaguars;
     //jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
     /**
@@ -51,20 +51,29 @@ public class CAN extends javax.swing.JPanel implements DSMListener, SRAListener 
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void refreshGraphs() {
-        if () {
+    private void refreshGraphs() {
+        if (jComboBox1.getSelectedIndex() != -1) {
             graph1.removeAllStreams();
             graph1.addStream(
-                    dataStreamingModule.getStream("PIDO"
-                    + listItems.get(jList1.getSelectedIndex())),
-                    Color.GREEN, 0.5, 0.4, false);
+                    dataStreamingModule.getStream("CANJAGUARV"
+                    + comboBoxJaguars[jComboBox1.getSelectedIndex()]),
+                    Color.RED, 0.0, 1 / 15, false);
             graph1.addStream(
-                    dataStreamingModule.getStream("PIDE"
-                    + listItems.get(jList1.getSelectedIndex())),
-                    Color.RED, 0.5,
-                    0.5 / Double.parseDouble(es.getText()), true);
-        } else {
+                    dataStreamingModule.getStream("CANJAGUARA"
+                    + comboBoxJaguars[jComboBox1.getSelectedIndex()]),
+                    Color.BLUE, 0.0, 1 / 40, false);
+            graph1.addStream(
+                    dataStreamingModule.getStream("CANJAGUARI"
+                    + comboBoxJaguars[jComboBox1.getSelectedIndex()]),
+                    Color.ORANGE, 0.0, 1 / 15, false);
         }
+    }
+
+    private void refreshValues() {
+        hardwareVersion.setText("Hardware Version: "
+                + synchronizedRegisterArray.get("CANJAGUARHV"
+                + comboBoxJaguars[jComboBox1.getSelectedIndex()]));
+        
     }
 
     /**
@@ -182,9 +191,7 @@ public class CAN extends javax.swing.JPanel implements DSMListener, SRAListener 
     }// </editor-fold>//GEN-END:initComponents
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        
     }//GEN-LAST:event_jComboBox1ActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel current;
     private javax.swing.JLabel firmwareVersion;
