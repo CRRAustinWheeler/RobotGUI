@@ -9,6 +9,8 @@ import communications.DataStreamingModule;
 import communications.SRAListener;
 import communications.SynchronizedRegisterArray;
 import java.awt.Color;
+import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
 
 /**
  *
@@ -38,42 +40,94 @@ public class CAN extends javax.swing.JPanel implements DSMListener, SRAListener 
 
     @Override
     public synchronized void alertToDSMUpdates() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        refreshLabels();
     }
 
     @Override
     public synchronized void alertToNewStreams() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        refeshComboBox();
     }
 
     @Override
     public synchronized void alertToSRAUpdates() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        refreshLabels();
     }
 
-    private void refreshGraphs() {
+    private void refreshGraph() {
         if (jComboBox1.getSelectedIndex() != -1) {
             graph1.removeAllStreams();
             graph1.addStream(
-                    dataStreamingModule.getStream("CANJAGUARV"
+                    dataStreamingModule.getStream("CANJAGUAROV"
                     + comboBoxJaguars[jComboBox1.getSelectedIndex()]),
                     Color.RED, 0.0, 1 / 15, false);
             graph1.addStream(
-                    dataStreamingModule.getStream("CANJAGUARA"
+                    dataStreamingModule.getStream("CANJAGUARI"
                     + comboBoxJaguars[jComboBox1.getSelectedIndex()]),
                     Color.BLUE, 0.0, 1 / 40, false);
             graph1.addStream(
-                    dataStreamingModule.getStream("CANJAGUARI"
+                    dataStreamingModule.getStream("CANJAGUARIV"
                     + comboBoxJaguars[jComboBox1.getSelectedIndex()]),
                     Color.ORANGE, 0.0, 1 / 15, false);
         }
     }
 
-    private void refreshValues() {
-        hardwareVersion.setText("Hardware Version: "
-                + synchronizedRegisterArray.get("CANJAGUARHV"
-                + comboBoxJaguars[jComboBox1.getSelectedIndex()]));
-        
+    private void refeshComboBox() {
+        ArrayList<Integer> list = new ArrayList();
+        String[] names = dataStreamingModule.getStreamNames();
+        for (int i = 0; i < names.length; i++) {
+            if (names[i].startsWith("CANJAGUAROV")) {
+                list.add(new Integer(names[i].substring(11)));
+            }
+        }
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < comboBoxJaguars.length; j++) {
+                if (list.get(i).intValue() == comboBoxJaguars[j]) {
+                    list.remove(i);
+                }
+            }
+        }
+        if (list.size() > 0) {
+            int[] newComboBoxJaguarsList =
+                    new int[comboBoxJaguars.length + list.size()];
+            for (int i = 0; i < newComboBoxJaguarsList.length; i++) {
+                if (i < comboBoxJaguars.length) {
+                    newComboBoxJaguarsList[i] = comboBoxJaguars[i];
+                } else {
+                    newComboBoxJaguarsList[i] =
+                            list.get(i - comboBoxJaguars.length).intValue();
+                }
+            }
+            comboBoxJaguars = newComboBoxJaguarsList;
+
+            ArrayList<String> jagNames = new ArrayList<String>();
+            for (int i = 0; i < comboBoxJaguars.length; i++) {
+                jagNames.add("Jaguar " + i);
+            }
+            int index = jComboBox1.getSelectedIndex();
+            jComboBox1.setModel(new DefaultComboBoxModel(jagNames.toArray()));
+            if (index != -1) {
+                jComboBox1.setSelectedIndex(index);
+            }
+        }
+    }
+
+    private void refreshLabels() {
+        int jID = comboBoxJaguars[jComboBox1.getSelectedIndex()];
+        if (jID != -1) {
+            hardwareVersion.setText("Hardware Version: "
+                    + synchronizedRegisterArray.get("CANJAGUARHV" + jID));
+            firmwareVersion.setText("Firmware Version: "
+                    + synchronizedRegisterArray.get("CANJAGUARFV" + jID));
+            firmwareVersion.setText("Jaguar ID: " + jID);
+            setpoint.setText("Setpoint: " + dataStreamingModule.getStream(
+                    "CANJAGUARSP" + jID).getLastPacket().val);
+            current.setText("Current: " + dataStreamingModule.getStream(
+                    "CANJAGUARI" + jID).getLastPacket().val);
+            outputVoltage.setText("Output Voltage: " + dataStreamingModule.getStream(
+                    "CANJAGUAROV" + jID).getLastPacket().val);
+            inputVoltage.setText("Input Voltage: " + dataStreamingModule.getStream(
+                    "CANJAGUARIV" + jID).getLastPacket().val);
+        }
     }
 
     /**
@@ -191,6 +245,8 @@ public class CAN extends javax.swing.JPanel implements DSMListener, SRAListener 
     }// </editor-fold>//GEN-END:initComponents
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        refreshLabels();
+        refreshGraph();
     }//GEN-LAST:event_jComboBox1ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel current;

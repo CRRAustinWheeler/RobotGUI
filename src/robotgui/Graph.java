@@ -4,13 +4,13 @@
  */
 package robotgui;
 
+import communications.DataStream;
+import communications.Packet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import communications.DataStream;
-import communications.Packet;
 
 /**
  *
@@ -88,21 +88,21 @@ public class Graph extends javax.swing.JPanel implements Runnable {
         }
         Packet oldPacket;
         for (GStream gStream : streams) {
-                oldPacket = gStream.stream.getLastPacket();
-                for (int i = 1; i < gStream.stream.getPackets().length
-                        && oldPacket.time - System.currentTimeMillis()
-                        > graphTime; i++) {
-                    g.setColor(gStream.color);
-                    paintLine(
-                            oldPacket.time,
-                            (oldPacket.val
-                            * gStream.scale) + gStream.center,
-                            gStream.stream.getPackets()[i].time,
-                            (gStream.stream.getPackets()[i].val
-                            * gStream.scale) + gStream.center, g);
-                    oldPacket = gStream.stream.getPackets()[i];
-                }
-            
+            oldPacket = gStream.stream.getLastPacket();
+            for (int i = 1; i < gStream.stream.getPackets().length
+                    && oldPacket.time - System.currentTimeMillis()
+                    > graphTime; i++) {
+                g.setColor(gStream.color);
+                paintLine(
+                        oldPacket.time,
+                        (oldPacket.val
+                        * gStream.scale) + gStream.center,
+                        gStream.stream.getPackets()[i].time,
+                        (gStream.stream.getPackets()[i].val
+                        * gStream.scale) + gStream.center, g);
+                oldPacket = gStream.stream.getPackets()[i];
+            }
+
         }
     }
 
@@ -133,13 +133,16 @@ public class Graph extends javax.swing.JPanel implements Runnable {
             } catch (InterruptedException ex) {
                 Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
             }
-            repaint();
+            if (isVisible()) {
+                repaint();
+            }
         }
     }
 
     private class GStream {
 
-        private GStream(DataStream stream, double center, double scale, Color color, boolean drawZero) {
+        private GStream(DataStream stream, double center,
+                double scale, Color color, boolean drawZero) {
             this.stream = stream;
             this.center = center;
             this.scale = scale;

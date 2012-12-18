@@ -67,8 +67,12 @@ public class PID extends javax.swing.JPanel implements DSMListener, SRAListener 
                 }
             }
         }
-        for (int i = 0; i < listItems.size(); i++) {
-            list.remove(listItems.get(i));
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < listItems.size(); j++) {
+                if (list.get(i).matches(listItems.get(j))) {
+                    list.remove(i);
+                }
+            }
         }
         if (list.size() > 0) {
             listItems.addAll(list);
