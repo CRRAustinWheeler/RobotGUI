@@ -18,9 +18,9 @@ import java.util.logging.Logger;
  */
 public class Graph extends javax.swing.JPanel implements Runnable {
 
-    private double graphTime = -5000;
+    private double graphTime = -10000;
     private ArrayList<GStream> streams;
-    private int hz = 20;
+    private double hz = 16;
     private Thread thread;
 
     /**
@@ -33,18 +33,18 @@ public class Graph extends javax.swing.JPanel implements Runnable {
         thread.start();
     }
 
-    public void sethz(int hz) {
+    public synchronized void sethz(int hz) {
         this.hz = hz;
     }
 
-    public void addStream(
+    public synchronized void addStream(
             DataStream dataStream, Color color,
             double center, double scale,
             boolean drawZero) {
         streams.add(new GStream(dataStream, center, scale, color, drawZero));
     }
 
-    public String[] geStreams() {
+    public synchronized String[] geStreams() {
         String[] names = new String[streams.size()];
         for (int i = 0; i < streams.size(); i++) {
             names[i] = streams.get(i).stream.getName();
@@ -52,7 +52,7 @@ public class Graph extends javax.swing.JPanel implements Runnable {
         return names;
     }
 
-    public void removeStream(String stream) {
+    public synchronized void remoGraphveStream(String stream) {
         for (int i = 0; i < streams.size(); i++) {
             if (streams.get(i).stream.getName().equals(stream)) {
                 streams.remove(i);
@@ -60,16 +60,16 @@ public class Graph extends javax.swing.JPanel implements Runnable {
         }
     }
 
-    public void removeAllStreams() {
+    public synchronized void removeAllStreams() {
         streams = new ArrayList();
     }
 
-    public void setTime(long time) {
+    public synchronized void setTime(long time) {
         graphTime = -Math.abs(time);
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    protected synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
         Color c;
         for (GStream gStream : streams) {
@@ -129,11 +129,10 @@ public class Graph extends javax.swing.JPanel implements Runnable {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(1000 * (1 / hz));
+                Thread.sleep((int)(1000 * (1 / hz)));
             } catch (InterruptedException ex) {
-                Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (isVisible()) {
+            if (isShowing()) {
                 repaint();
             }
         }

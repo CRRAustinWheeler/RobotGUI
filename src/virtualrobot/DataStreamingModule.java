@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package communications;
+package virtualrobot;
 
 import java.util.Vector;
 
@@ -71,7 +71,6 @@ public class DataStreamingModule {
         for (int i = 0; i < updates.size(); i++) {
 
             //search for a prexisting stream
-            //System.out.println(((Packet) updates.elementAt(i)).name);
             DataStream stream = getStream(((Packet) updates.elementAt(i)).name);
 
             //if one is found...

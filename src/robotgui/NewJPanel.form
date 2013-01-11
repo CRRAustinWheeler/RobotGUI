@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
-  <Properties>
-    <Property name="autoscrolls" type="boolean" value="true"/>
-  </Properties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -19,26 +16,24 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jScrollPane1" alignment="0" pref="312" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" alignment="0" pref="617" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" alignment="0" pref="389" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
-      <Properties>
-        <Property name="horizontalScrollBar" type="javax.swing.JScrollBar" editor="org.netbeans.modules.form.ComponentChooserEditor">
-          <ComponentRef name="null"/>
-        </Property>
-      </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel1">
+          <Properties>
+            <Property name="autoscrolls" type="boolean" value="true"/>
+          </Properties>
 
           <Layout>
             <DimensionLayout dim="0">
@@ -50,21 +45,27 @@
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="306" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="channel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel3" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel4" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel5" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel6" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel7" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel8" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel9" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel10" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel11" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel12" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel13" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="channel14" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="channel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel2" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel3" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel4" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel5" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel6" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel7" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel8" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel9" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel10" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel11" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel12" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel13" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="channel14" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -108,17 +109,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="robotgui.Channel" name="channel14">
-            </Component>
-            <Component class="robotgui.Channel" name="channel10">
-            </Component>
-            <Component class="robotgui.Channel" name="channel11">
-            </Component>
-            <Component class="robotgui.Channel" name="channel12">
-            </Component>
-            <Component class="robotgui.Channel" name="channel13">
-            </Component>
-            <Component class="robotgui.Channel" name="channel8">
+            <Component class="robotgui.Channel" name="channel1">
             </Component>
             <Component class="robotgui.Channel" name="channel2">
             </Component>
@@ -130,13 +121,9 @@
                 </Property>
               </Properties>
             </Component>
-            <Component class="robotgui.Channel" name="channel1">
-            </Component>
-            <Component class="robotgui.Channel" name="channel3">
-            </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
               <Properties>
-                <Property name="text" type="java.lang.String" value="DIO dir &amp; state"/>
+                <Property name="text" type="java.lang.String" value="DIO directoin &amp; state"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[128, 14]"/>
                 </Property>
@@ -150,13 +137,27 @@
                 </Property>
               </Properties>
             </Component>
-            <Component class="robotgui.Channel" name="channel7">
+            <Component class="robotgui.Channel" name="channel3">
             </Component>
-            <Component class="robotgui.Channel" name="channel5">
+            <Component class="robotgui.Channel" name="channel4">
             </Component>
             <Component class="robotgui.Channel" name="channel6">
             </Component>
-            <Component class="robotgui.Channel" name="channel4">
+            <Component class="robotgui.Channel" name="channel5">
+            </Component>
+            <Component class="robotgui.Channel" name="channel7">
+            </Component>
+            <Component class="robotgui.Channel" name="channel12">
+            </Component>
+            <Component class="robotgui.Channel" name="channel11">
+            </Component>
+            <Component class="robotgui.Channel" name="channel8">
+            </Component>
+            <Component class="robotgui.Channel" name="channel13">
+            </Component>
+            <Component class="robotgui.Channel" name="channel10">
+            </Component>
+            <Component class="robotgui.Channel" name="channel14">
             </Component>
             <Component class="robotgui.Channel" name="channel9">
             </Component>

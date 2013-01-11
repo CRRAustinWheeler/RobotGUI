@@ -8,8 +8,8 @@ package virtualrobot;
  *
  * @author laptop
  */
-public class VirtualRobot implements Runnable{
-    
+public class VirtualRobot implements Runnable {
+
     static Thread thread;
     static FakeFeedback fakeFeedback;
     static DashBoard dashBoard;
@@ -20,6 +20,8 @@ public class VirtualRobot implements Runnable{
      */
     public static void main(String[] args) {
         dashBoard = new DashBoard();
+        dashBoard.monitorJaguar(new Jaguar());
+        dashBoard.monitorJaguar(new Jaguar());
         fakeFeedback = new FakeFeedback();
         pIDControllerAIAO = new PIDControllerAIAO(0.01, 0, 0, fakeFeedback, fakeFeedback, dashBoard, "fake");
         pIDControllerAIAO.enable();

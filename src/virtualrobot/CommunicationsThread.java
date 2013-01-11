@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package communications;
+package virtualrobot;
 
 import java.util.Vector;
 import java.util.logging.Level;
@@ -51,10 +51,6 @@ public class CommunicationsThread implements Runnable {
                     sendRegisterArrayUpdates(sock, arrayUpdates);
                     sendStreamUpdates(sock, streamUpdates);
                     sock.flush();
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException ex) {
-                    }
                 }
             } catch (ConnectionResetException cre) {
                 synchronizedRegisterArray.resynchronize();

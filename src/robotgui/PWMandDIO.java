@@ -86,6 +86,8 @@ public class PWMandDIO extends javax.swing.JPanel implements DSMListener {
         iOpanel1 = new robotgui.IOpanel();
         jComboBox1 = new javax.swing.JComboBox();
 
+        graph1.setPreferredSize(new java.awt.Dimension(0, 0));
+
         javax.swing.GroupLayout graph1Layout = new javax.swing.GroupLayout(graph1);
         graph1.setLayout(graph1Layout);
         graph1Layout.setHorizontalGroup(
@@ -97,7 +99,11 @@ public class PWMandDIO extends javax.swing.JPanel implements DSMListener {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
+        iOpanel1.setMinimumSize(new java.awt.Dimension(0, 0));
+
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PWM1", "PWM2", "PWM3", "PWM4", "PWM5", "PWM6", "PWM7", "PWM8", "PWM9", "PWM10", "DIO1-7", "DIO8-14", "Relays" }));
+        jComboBox1.setMinimumSize(new java.awt.Dimension(0, 28));
+        jComboBox1.setPreferredSize(new java.awt.Dimension(0, 28));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -111,7 +117,7 @@ public class PWMandDIO extends javax.swing.JPanel implements DSMListener {
             .addGroup(layout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
                     .addComponent(jComboBox1, 0, 378, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(iOpanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -122,13 +128,11 @@ public class PWMandDIO extends javax.swing.JPanel implements DSMListener {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(iOpanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(iOpanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(graph1, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents

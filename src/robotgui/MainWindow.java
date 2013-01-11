@@ -50,40 +50,41 @@ public class MainWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         tabbedPane = new javax.swing.JTabbedPane();
-        terminalTab = new robotgui.Terminal();
         pWMandDIO1 = new robotgui.PWMandDIO();
         pID1 = new robotgui.PID();
         sRAandDSM1 = new robotgui.SRAandDSM();
         cAN1 = new robotgui.CAN();
+        camera2 = new robotgui.Camera();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        tabbedPane.addTab("Terminal", terminalTab);
+        tabbedPane.setMinimumSize(new java.awt.Dimension(73, 36));
         tabbedPane.addTab("PWM and DIO", pWMandDIO1);
         tabbedPane.addTab("PID", pID1);
         tabbedPane.addTab("SRA and DSM", sRAandDSM1);
         tabbedPane.addTab("CAN", cAN1);
+        tabbedPane.addTab("Camera", camera2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tabbedPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 660, Short.MAX_VALUE)
+            .addComponent(tabbedPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 660, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tabbedPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 321, Short.MAX_VALUE)
+            .addComponent(tabbedPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private robotgui.CAN cAN1;
+    private robotgui.Camera camera2;
     private robotgui.PID pID1;
     private robotgui.PWMandDIO pWMandDIO1;
     private robotgui.SRAandDSM sRAandDSM1;
     private javax.swing.JTabbedPane tabbedPane;
-    private robotgui.Terminal terminalTab;
     // End of variables declaration//GEN-END:variables
 
     void init(DataStreamingModule dataStreamingModule,
@@ -93,5 +94,6 @@ public class MainWindow extends javax.swing.JFrame {
         pWMandDIO1.init(dataStreamingModule, synchronizedRegisterArray);
         pID1.init(dataStreamingModule, synchronizedRegisterArray);
         sRAandDSM1.init(synchronizedRegisterArray, dataStreamingModule);
+        cAN1.init(dataStreamingModule, synchronizedRegisterArray);
     }
 }

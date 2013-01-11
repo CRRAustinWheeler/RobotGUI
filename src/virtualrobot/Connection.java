@@ -14,8 +14,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import communications.ConnectionResetException;
-import communications.SimpleSock;
 
 public class Connection implements SimpleSock {
 
