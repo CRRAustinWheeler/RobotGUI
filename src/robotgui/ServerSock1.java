@@ -6,51 +6,61 @@ package robotgui;
 
 import communications.ConnectionResetException;
 import communications.SimpleSock;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author laptop
  */
-public class ServerSock implements SimpleSock {
-
+public class ServerSock1 implements SimpleSock {
+    
     Thread thread;
     ServerSocket serverSocket;
     Socket connection;
-    private InputStreamBuffer inputStreamBuffer;
-    private OutputStreamBuffer outputStreamBuffer;
-
-    public ServerSock() {
+    private BufferedReader bufferedReader;
+    private BufferedWriter bufferedWriter;
+    
+    public ServerSock1() {
         try {
             serverSocket = new ServerSocket(1180);
         } catch (IOException ex) {
             System.exit(1180);
         }
     }
-
+    
+    public void purgeConnection() {
+        if (connection != null) {
+            try {
+                System.out.println("purging connecting");
+                connection.close();
+            } catch (IOException ex) {
+            }
+            connection = null;
+        }
+    }
+    
     private void reconnect() {
         boolean retry = true;
         while (retry) {
             retry = false;
             try {
-                if (inputStreamBuffer != null) {//close if open
-                    inputStreamBuffer.close();
+                if (bufferedReader != null) {//close if open
+                    bufferedReader.close();
                 }
-                if (outputStreamBuffer != null) {//close if open
-                    outputStreamBuffer.close();
-                }
-                if (connection != null) {//close if open
-                    connection.close();
+                if (bufferedWriter != null) {//close if open
+                    bufferedWriter.close();
                 }
             } catch (IOException ex) {
             }
-            connection = null;
+            purgeConnection();
             while (connection == null) {//keeps trying to connect
                 try {
                     Thread.sleep(200);
@@ -58,25 +68,30 @@ public class ServerSock implements SimpleSock {
                     ex.printStackTrace();
                 }
                 try {
-                    System.out.println("waiting for connection");
                     connection = serverSocket.accept();
+                    System.out.println("connection accepted");
                 } catch (IOException ex) {
-                    connection = null;
-                    System.out.println("server down");
+                    purgeConnection();
                 }
             }
             //setup the reader and writer objects
             try {
-                outputStreamBuffer =
-                        new OutputStreamBuffer(connection.getOutputStream());
-                inputStreamBuffer =
-                        new InputStreamBuffer(connection.getInputStream());
+                bufferedReader =
+                        new BufferedReader(
+                        new InputStreamReader(
+                        connection.getInputStream()));
+                bufferedWriter =
+                        new BufferedWriter(
+                        new OutputStreamWriter(
+                        connection.getOutputStream()));
+                bufferedWriter.write("\n\n\n");
+                bufferedWriter.flush();
             } catch (IOException ex) {
                 retry = true;
             }
         }
     }
-
+    
     @Override
     public synchronized long readLong()
             throws ConnectionResetException {
@@ -84,13 +99,13 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            return inputStreamBuffer.readLong();
+            return Long.parseLong(bufferedReader.readLine());
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public synchronized int readInt()
             throws ConnectionResetException {
@@ -98,13 +113,13 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            return inputStreamBuffer.readInt();
+            return Integer.parseInt(bufferedReader.readLine());
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public synchronized double readDouble()
             throws ConnectionResetException {
@@ -112,13 +127,13 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            return inputStreamBuffer.readDouble();
+            return Double.parseDouble(bufferedReader.readLine());
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public synchronized char readChar()
             throws ConnectionResetException {
@@ -126,14 +141,14 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            return inputStreamBuffer.readChar();
+            return (char) bufferedReader.read();
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
-
+        
     }
-
+    
     @Override
     public synchronized byte readByte()
             throws ConnectionResetException {
@@ -141,13 +156,13 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            return inputStreamBuffer.readByte();
+            return Byte.parseByte(bufferedReader.readLine());
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public synchronized void writeLong(long l)
             throws ConnectionResetException {
@@ -155,13 +170,14 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            outputStreamBuffer.writeLong(l);
+            bufferedWriter.write(new Long(l).toString());
+            bufferedWriter.newLine();
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public synchronized void writeInt(int i)
             throws ConnectionResetException {
@@ -169,13 +185,14 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            outputStreamBuffer.writeInt(i);
+            bufferedWriter.write(new Integer(i).toString()+"\n");
+            //bufferedWriter.newLine();
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public synchronized void writeDouble(double d)
             throws ConnectionResetException {
@@ -183,13 +200,14 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            outputStreamBuffer.writeDouble(d);
+            bufferedWriter.write(new Double(d).toString());
+            bufferedWriter.newLine();
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public synchronized void writeChar(char c)
             throws ConnectionResetException {
@@ -197,13 +215,13 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            outputStreamBuffer.writeChar(c);
+            bufferedWriter.write((int) c);
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public synchronized void writeByte(byte b)
             throws ConnectionResetException {
@@ -211,13 +229,14 @@ public class ServerSock implements SimpleSock {
             reconnect();
         }
         try {
-            outputStreamBuffer.writeByte(b);
+            bufferedWriter.write(new Byte(b).toString());
+            bufferedWriter.newLine();
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public synchronized String readString()
             throws ConnectionResetException {
@@ -231,7 +250,7 @@ public class ServerSock implements SimpleSock {
         }
         return result;
     }
-
+    
     @Override
     public synchronized void writeString(String s)
             throws ConnectionResetException {
@@ -243,20 +262,21 @@ public class ServerSock implements SimpleSock {
             writeChar(s.charAt(i));
         }
     }
-
+    
     @Override
     public synchronized void flush() throws ConnectionResetException {
         if (connection == null) {
             reconnect();
         }
         try {
-            outputStreamBuffer.flush();
+            bufferedWriter.flush();
+            System.out.println("flushed");
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();
         }
     }
-
+    
     @Override
     public boolean isServer() {
         return true;

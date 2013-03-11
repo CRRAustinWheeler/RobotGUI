@@ -126,51 +126,53 @@ public class CAN extends javax.swing.JPanel implements DSMListener, SRAListener 
                 jComboBox1.setSelectedIndex(index);
             }
         } else {
-            jComboBox1.setModel(new DefaultComboBoxModel(new Object[0]));
         }
     }
 
     private synchronized void refreshLabels() {
         if (isVisible() && lastLabelRefresh + 2000 < System.currentTimeMillis() && jComboBox1.getSelectedIndex() != -1) {
             lastLabelRefresh = System.currentTimeMillis();
-            int jID = comboBoxJaguars[jComboBox1.getSelectedIndex()];
-            if (jID != -1) {
-                hardwareVersion.setText("Hardware Version: "
-                        + synchronizedRegisterArray.get("CANJAGUARHV" + jID));
-                firmwareVersion.setText("Firmware Version: "
-                        + synchronizedRegisterArray.get("CANJAGUARFV" + jID));
-                jaguarID.setText("Jaguar ID: " + jID);
-
-                DataStream ds;
-                ds = dataStreamingModule.getStream("CANJAGUARX" + jID);
-                if (ds != null) {
-                    setpoint.setText("Setpoint: "
-                            + (Math.round(ds.getLastPacket().val
-                            * 100d) / 100d));
-                }
-                ds = dataStreamingModule.getStream("CANJAGUARI" + jID);
-                if (ds != null) {
-                    current.setText("Current: "
-                            + (Math.round(ds.getLastPacket().val
-                            * 100d) / 100d));
-                }
-                ds = dataStreamingModule.getStream("CANJAGUAROV" + jID);
-                if (ds != null) {
-                    outputVoltage.setText("Output Voltage: "
-                            + (Math.round(ds.getLastPacket().val
-                            * 100d) / 100d));
-                }
-                ds = dataStreamingModule.getStream("CANJAGUARIV" + jID);
-                if (ds != null) {
-                    inputVoltage.setText("Input Voltage: "
-                            + (Math.round(ds.getLastPacket().val
-                            * 100d) / 100d));
-                }
-                ds = dataStreamingModule.getStream("CANJAGUART" + jID);
-                if (ds != null) {
-                    tempature.setText("Tempature: "
-                            + (Math.round(ds.getLastPacket().val
-                            * 100d) / 100d));
+            int index = jComboBox1.getSelectedIndex();
+            if (index!=-1) {
+                int jID = comboBoxJaguars[index];
+                if (jID != -1) {
+                    hardwareVersion.setText("Hardware Version: "
+                            + synchronizedRegisterArray.get("CANJAGUARHV" + jID));
+                    firmwareVersion.setText("Firmware Version: "
+                            + synchronizedRegisterArray.get("CANJAGUARFV" + jID));
+                    jaguarID.setText("Jaguar ID: " + jID);
+                    
+                    DataStream ds;
+                    ds = dataStreamingModule.getStream("CANJAGUARX" + jID);
+                    if (ds != null) {
+                        setpoint.setText("Setpoint: "
+                                + (Math.round(ds.getLastPacket().val
+                                * 100d) / 100d));
+                    }
+                    ds = dataStreamingModule.getStream("CANJAGUARI" + jID);
+                    if (ds != null) {
+                        current.setText("Current: "
+                                + (Math.round(ds.getLastPacket().val
+                                * 100d) / 100d));
+                    }
+                    ds = dataStreamingModule.getStream("CANJAGUAROV" + jID);
+                    if (ds != null) {
+                        outputVoltage.setText("Output Voltage: "
+                                + (Math.round(ds.getLastPacket().val
+                                * 100d) / 100d));
+                    }
+                    ds = dataStreamingModule.getStream("CANJAGUARIV" + jID);
+                    if (ds != null) {
+                        inputVoltage.setText("Input Voltage: "
+                                + (Math.round(ds.getLastPacket().val
+                                * 100d) / 100d));
+                    }
+                    ds = dataStreamingModule.getStream("CANJAGUART" + jID);
+                    if (ds != null) {
+                        tempature.setText("Tempature: "
+                                + (Math.round(ds.getLastPacket().val
+                                * 100d) / 100d));
+                    }
                 }
             }
         }
@@ -283,7 +285,7 @@ public class CAN extends javax.swing.JPanel implements DSMListener, SRAListener 
                 .addComponent(tempature))
         );
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "test" }));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);

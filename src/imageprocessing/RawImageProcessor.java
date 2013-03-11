@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage;
 public class RawImageProcessor {
 
     int[][] data;
-    public static double thresholdA = 0.06;
+    public static double thresholdA = 0.12;
 
     public static int[] ProcessImage(BufferedImage img) {
         int w = img.getWidth(null);

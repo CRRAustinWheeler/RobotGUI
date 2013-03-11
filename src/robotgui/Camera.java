@@ -4,10 +4,6 @@
  */
 package robotgui;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.Authenticator;
@@ -41,9 +37,9 @@ public class Camera extends javax.swing.JPanel {
                     return (new PasswordAuthentication("root", "password".toCharArray()));
                 }
             });
-            //img = ImageIO.read(new URL("http://"+jTextField1.getText()+"/jpg/1/image.jpg"));
+            img = ImageIO.read(new URL("http://"+jTextField1.getText()+"/jpg/1/image.jpg"));
             //img = ImageIO.read(new URL("http://entertainment.blogs.foxnews.com/files/2011/04/aflac-duck.jpg"));
-            img = ImageIO.read(new URL("https://lh3.googleusercontent.com/-SMgeINXOuyg/UO-oUtmtvbI/AAAAAAAAAY4/_kX1bM2i5IA/s0-d/infrared%2Bimage%2B1-9-13.bmp"));
+            //img = ImageIO.read(new URL("https://lh3.googleusercontent.com/-SMgeINXOuyg/UO-oUtmtvbI/AAAAAAAAAY4/_kX1bM2i5IA/s0-d/infrared%2Bimage%2B1-9-13.bmp"));
         } catch (IOException ex) {
         }
         return img;
@@ -72,7 +68,7 @@ public class Camera extends javax.swing.JPanel {
                 while (img != null && !Thread.interrupted()) {
                     cameraImagePanel1.paintImage(img);
                     try {
-                        Thread.sleep(40);
+                        Thread.sleep(100);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Camera.class.getName()).log(Level.SEVERE, null, ex);
                     }

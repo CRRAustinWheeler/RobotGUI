@@ -15,6 +15,7 @@ public class DashBoard {
     CommunicationsThread communicationsThread;
     SynchronizedRegisterArray synchronizedRegisterArray;
     JaguarMonitor jaguarMonitor;
+    DashBoard dashBoard;
 
     public DashBoard() {
         dataStreamingModule = new DataStreamingModule();
@@ -41,5 +42,18 @@ public class DashBoard {
 
     public void monitorJaguar(Jaguar j) {
         jaguarMonitor.addJaguar(j);
+    }
+
+    public synchronized void prtln(String ln, int debugLevel) {
+        if (debugLevel <= synchronizedRegisterArray.get("DEBUGLEVEL")) {
+            for (int i = 0; i < ln.length(); i++) {
+                streamPacket(ln.charAt(i), "DEBUG");
+            }
+            streamPacket('\n', "DEBUG");
+        }
+        for (int i = 0; i < ln.length(); i++) {
+                streamPacket(ln.charAt(i), "DRIVERCONSOLE");
+            }
+            streamPacket('\n', "DRIVERCONSOLE");
     }
 }

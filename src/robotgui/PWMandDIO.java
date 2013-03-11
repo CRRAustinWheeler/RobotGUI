@@ -9,6 +9,7 @@ import java.awt.Color;
 import communications.DataStream;
 import communications.DataStreamingModule;
 import communications.SynchronizedRegisterArray;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -164,7 +165,7 @@ public class PWMandDIO extends javax.swing.JPanel implements DSMListener {
                 }
                 return;
             }
-            if (selection == 11) {//DIO 7-14
+            if (selection == 11) {//DIO 7-13
                 graph1.removeAllStreams();
                 double scale = 1d / 21d;
                 DataStream ds;

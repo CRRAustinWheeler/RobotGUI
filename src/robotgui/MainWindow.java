@@ -19,7 +19,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     DataStreamingModule dataStreamingModule;
     SynchronizedRegisterArray synchronizedRegisterArray;
-    
+
     /**
      * Creates new form MainWindow
      */
@@ -55,6 +55,7 @@ public class MainWindow extends javax.swing.JFrame {
         sRAandDSM1 = new robotgui.SRAandDSM();
         cAN1 = new robotgui.CAN();
         camera2 = new robotgui.Camera();
+        debugConsole1 = new robotgui.DebugConsole();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -64,6 +65,7 @@ public class MainWindow extends javax.swing.JFrame {
         tabbedPane.addTab("SRA and DSM", sRAandDSM1);
         tabbedPane.addTab("CAN", cAN1);
         tabbedPane.addTab("Camera", camera2);
+        tabbedPane.addTab("Console", debugConsole1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -81,6 +83,7 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private robotgui.CAN cAN1;
     private robotgui.Camera camera2;
+    private robotgui.DebugConsole debugConsole1;
     private robotgui.PID pID1;
     private robotgui.PWMandDIO pWMandDIO1;
     private robotgui.SRAandDSM sRAandDSM1;
@@ -95,5 +98,6 @@ public class MainWindow extends javax.swing.JFrame {
         pID1.init(dataStreamingModule, synchronizedRegisterArray);
         sRAandDSM1.init(synchronizedRegisterArray, dataStreamingModule);
         cAN1.init(dataStreamingModule, synchronizedRegisterArray);
+        debugConsole1.init(dataStreamingModule, synchronizedRegisterArray);
     }
 }

@@ -52,7 +52,7 @@ public class DataStreamingModule {
     }
 
     synchronized void sendPacket(Packet packet) {
-        if (updateQueue.size() > 2048) {
+        if (updateQueue.size() > 512) {
             return;
         }
         updateQueue.addElement(packet);
@@ -96,7 +96,7 @@ public class DataStreamingModule {
 
         //return outgoing updates
         Vector v = updateQueue;
-        updateQueue = new Vector();
+        updateQueue = new Vector(512);
         return v;
     }
 }
