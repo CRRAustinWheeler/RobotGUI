@@ -36,7 +36,10 @@ public class MainWindow extends javax.swing.JFrame {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
         initComponents();
-        setSize(1024, 350);
+        dispose();
+        setUndecorated(true);
+        setSize(1024, 400);
+        setLocation(0, 0);
         setVisible(true);
     }
 
@@ -50,6 +53,8 @@ public class MainWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         tabbedPane = new javax.swing.JTabbedPane();
+        driver1 = new robotgui.Driver();
+        checkList1 = new robotgui.CheckList();
         pWMandDIO1 = new robotgui.PWMandDIO();
         pID1 = new robotgui.PID();
         sRAandDSM1 = new robotgui.SRAandDSM();
@@ -59,10 +64,13 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        tabbedPane.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         tabbedPane.setMinimumSize(new java.awt.Dimension(73, 36));
-        tabbedPane.addTab("PWM and DIO", pWMandDIO1);
+        tabbedPane.addTab("Driver", driver1);
+        tabbedPane.addTab("Chk Lst", checkList1);
+        tabbedPane.addTab("Sidecar", pWMandDIO1);
         tabbedPane.addTab("PID", pID1);
-        tabbedPane.addTab("SRA and DSM", sRAandDSM1);
+        tabbedPane.addTab("Data", sRAandDSM1);
         tabbedPane.addTab("CAN", cAN1);
         tabbedPane.addTab("Camera", camera2);
         tabbedPane.addTab("Console", debugConsole1);
@@ -83,7 +91,9 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private robotgui.CAN cAN1;
     private robotgui.Camera camera2;
+    private robotgui.CheckList checkList1;
     private robotgui.DebugConsole debugConsole1;
+    private robotgui.Driver driver1;
     private robotgui.PID pID1;
     private robotgui.PWMandDIO pWMandDIO1;
     private robotgui.SRAandDSM sRAandDSM1;
@@ -94,6 +104,7 @@ public class MainWindow extends javax.swing.JFrame {
             SynchronizedRegisterArray synchronizedRegisterArray) {
         this.dataStreamingModule = dataStreamingModule;
         this.synchronizedRegisterArray = synchronizedRegisterArray;
+        driver1.init(dataStreamingModule, synchronizedRegisterArray);
         pWMandDIO1.init(dataStreamingModule, synchronizedRegisterArray);
         pID1.init(dataStreamingModule, synchronizedRegisterArray);
         sRAandDSM1.init(synchronizedRegisterArray, dataStreamingModule);

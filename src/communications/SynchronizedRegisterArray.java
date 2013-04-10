@@ -35,10 +35,6 @@ public class SynchronizedRegisterArray {
         }
         index = indexOf(register, updateQueue);
         if (index != -1) {
-            if (((Register) updateQueue.elementAt(index)).val == register.val) {
-                System.out.println("Error");
-                System.exit(1);
-            }
             ((Register) updateQueue.elementAt(index)).val = register.val;
         } else {
             updateQueue.addElement(register);

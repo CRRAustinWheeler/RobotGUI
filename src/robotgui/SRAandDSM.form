@@ -101,7 +101,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="SRAs"/>
+        <Property name="text" type="java.lang.String" value="SRA"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">

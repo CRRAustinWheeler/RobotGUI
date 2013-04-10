@@ -60,15 +60,15 @@ public class DebugConsole extends javax.swing.JPanel implements DSMListener {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        debugLevel = new javax.swing.JSpinner();
+        debugChannel = new javax.swing.JSpinner();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
 
-        jLabel1.setText("Debug Level");
+        jLabel1.setText("Debug Channel");
 
-        debugLevel.addChangeListener(new javax.swing.event.ChangeListener() {
+        debugChannel.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                debugLevelStateChanged(evt);
+                debugChannelStateChanged(evt);
             }
         });
 
@@ -88,7 +88,7 @@ public class DebugConsole extends javax.swing.JPanel implements DSMListener {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
-                        .addComponent(debugLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(debugChannel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -98,19 +98,19 @@ public class DebugConsole extends javax.swing.JPanel implements DSMListener {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(debugLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(debugChannel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void debugLevelStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_debugLevelStateChanged
-        synchronizedRegisterArray.setRegister("DEBUGLEVEL",
-                Double.parseDouble(debugLevel.getValue().toString()));
-    }//GEN-LAST:event_debugLevelStateChanged
+    private void debugChannelStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_debugChannelStateChanged
+        synchronizedRegisterArray.setRegister("DEBUGCHANNEL",
+                Double.parseDouble(debugChannel.getValue().toString()));
+    }//GEN-LAST:event_debugChannelStateChanged
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JSpinner debugLevel;
+    private javax.swing.JSpinner debugChannel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;

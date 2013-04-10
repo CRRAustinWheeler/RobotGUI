@@ -34,6 +34,7 @@
   <SubComponents>
     <Container class="javax.swing.JTabbedPane" name="tabbedPane">
       <Properties>
+        <Property name="tabPlacement" type="int" value="2"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[73, 36]"/>
         </Property>
@@ -41,11 +42,29 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
+        <Component class="robotgui.Driver" name="driver1">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Driver">
+                <Property name="tabTitle" type="java.lang.String" value="Driver"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+        </Component>
+        <Component class="robotgui.CheckList" name="checkList1">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Chk Lst">
+                <Property name="tabTitle" type="java.lang.String" value="Chk Lst"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+        </Component>
         <Component class="robotgui.PWMandDIO" name="pWMandDIO1">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="PWM and DIO">
-                <Property name="tabTitle" type="java.lang.String" value="PWM and DIO"/>
+              <JTabbedPaneConstraints tabName="Sidecar">
+                <Property name="tabTitle" type="java.lang.String" value="Sidecar"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -62,8 +81,8 @@
         <Component class="robotgui.SRAandDSM" name="sRAandDSM1">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="SRA and DSM">
-                <Property name="tabTitle" type="java.lang.String" value="SRA and DSM"/>
+              <JTabbedPaneConstraints tabName="Data">
+                <Property name="tabTitle" type="java.lang.String" value="Data"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>

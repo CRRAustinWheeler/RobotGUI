@@ -113,7 +113,7 @@ public class SRAandDSM extends javax.swing.JPanel implements SRAListener,DSMList
 
         jScrollPane1.setViewportView(jList1);
 
-        jLabel1.setText("SRAs");
+        jLabel1.setText("SRA");
 
         jLabel2.setText("Data Streams");
 

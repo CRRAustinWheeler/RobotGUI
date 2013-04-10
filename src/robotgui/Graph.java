@@ -9,8 +9,6 @@ import communications.Packet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -129,7 +127,7 @@ public class Graph extends javax.swing.JPanel implements Runnable {
     public void run() {
         while (true) {
             try {
-                Thread.sleep((int)(1000 * (1 / hz)));
+                Thread.sleep((int) (1000d * (1d / hz)));
             } catch (InterruptedException ex) {
             }
             if (isShowing()) {
