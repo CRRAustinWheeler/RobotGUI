@@ -43,27 +43,20 @@ public class CommunicationsThread implements Runnable {
                 while (true) {
                     long l = System.currentTimeMillis();
                     Vector arrayUpdates = getRegisterArrayUpdates(sock);
-                    System.out.println(System.currentTimeMillis()-l);
                     l = System.currentTimeMillis();
                     Vector streamUpdates = getStreamUpdates(sock);
-                    System.out.println(System.currentTimeMillis()-l);
                     l = System.currentTimeMillis();
                     arrayUpdates = synchronizedRegisterArray.
                             exchangeUpdates(arrayUpdates);
-                    System.out.println(System.currentTimeMillis()-l);
                     l = System.currentTimeMillis();
                     streamUpdates = dataStreamingModule.
                             exchangeUpdates(streamUpdates);
-                    System.out.println(System.currentTimeMillis()-l);
                     l = System.currentTimeMillis();
                     sendRegisterArrayUpdates(sock, arrayUpdates);
-                    System.out.println(System.currentTimeMillis()-l);
                     l = System.currentTimeMillis();
                     sendStreamUpdates(sock, streamUpdates);
-                    System.out.println(System.currentTimeMillis()-l);
                     l = System.currentTimeMillis();
                     sock.flush();
-                    System.out.println(System.currentTimeMillis()-l);
                 }
             } catch (ConnectionResetException cre) {
                 synchronizedRegisterArray.resynchronize();
@@ -84,9 +77,7 @@ public class CommunicationsThread implements Runnable {
 
     private void sendRegisterArrayUpdates(SimpleSock sock, Vector updates)
             throws ConnectionResetException {
-        System.out.println("sendRegisterArrayUpdates" + updates.size());
         sock.writeInt(updates.size());
-        System.out.println("int sent");
         for (int i = 0; i < updates.size(); i++) {
             sock.writeString(((Register) updates.elementAt(i)).name);
             sock.writeDouble(((Register) updates.elementAt(i)).val);

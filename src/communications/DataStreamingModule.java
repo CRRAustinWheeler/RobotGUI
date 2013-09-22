@@ -71,7 +71,6 @@ public class DataStreamingModule {
         for (int i = 0; i < updates.size(); i++) {
 
             //search for a prexisting streamCommunicationsThread
-            //System.out.println(((Packet) updates.elementAt(i)).name);
             DataStream stream = getStream(((Packet) updates.elementAt(i)).name);
 
             //if one is found...
