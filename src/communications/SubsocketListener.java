@@ -8,9 +8,6 @@ package communications;
  *
  * @author laptop
  */
-public class ConnectionResetException extends Exception {
-
-    public ConnectionResetException() {
-    }
-    
+public interface SubsocketListener {
+    public void SubsocketAdded();
 }

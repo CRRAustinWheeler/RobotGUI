@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package robotgui;
+package communications;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,43 +58,6 @@ public class InputStreamBuffer {
 
     public byte readByte() throws IOException {
         return getByteFromBuffer();
-    }
-
-    public short readShort() throws IOException {
-        return PrimitiveSerializer.bytesToShort(getBytesFromBuffer(2));
-    }
-
-    public int readInt() throws IOException {
-        return PrimitiveSerializer.bytesToInt(getBytesFromBuffer(4));
-    }
-
-    public long readLong() throws IOException {
-        return PrimitiveSerializer.bytesToLong(getBytesFromBuffer(8));
-    }
-
-    public float readFloat() throws IOException {
-        return PrimitiveSerializer.bytesToFloat(getBytesFromBuffer(4));
-    }
-
-    public double readDouble() throws IOException {
-        return PrimitiveSerializer.bytesToDouble(getBytesFromBuffer(8));
-    }
-
-    public char readChar() throws IOException {
-        return PrimitiveSerializer.bytesToChar(getBytesFromBuffer(2));
-    }
-
-    public String readString() throws IOException {
-        String s = "";
-        int length = readInt();
-        for (int i = 0; i < length; i++) {
-            s = s + readChar();
-        }
-        return s;
-    }
-
-    public boolean readBoolaen() throws IOException {
-        return PrimitiveSerializer.bytesToBoolean(getBytesFromBuffer(1));
     }
 
     public void close() throws IOException {

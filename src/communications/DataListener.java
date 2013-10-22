@@ -4,13 +4,10 @@
  */
 package communications;
 
-import java.util.Vector;
-
 /**
  *
  * @author laptop
  */
-public interface DSMListener {
-    public void alertToDSMUpdates();
-    public void alertToNewStreams();
+public interface DataListener {
+    public void getData();
 }

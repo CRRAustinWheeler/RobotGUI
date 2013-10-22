@@ -4,12 +4,11 @@
  */
 package communications;
 
-import java.util.Vector;
-
 /**
  *
  * @author laptop
  */
-public interface SRAListener {
-    public void alertToSRAUpdates();
+public interface ConnectionListener {
+    public void disconnected();
+    public void connected();
 }

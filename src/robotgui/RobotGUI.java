@@ -4,6 +4,7 @@
  */
 package robotgui;
 
+import communications.ServerSock;
 import communications.CommunicationsThread;
 import communications.DataStreamingModule;
 import communications.SynchronizedRegisterArray;
