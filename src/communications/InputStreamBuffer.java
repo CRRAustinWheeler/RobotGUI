@@ -6,6 +6,8 @@ package communications;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,7 +35,7 @@ public class InputStreamBuffer {
         this(inputStream, 262144);//256k buffer
     }
 
-    private byte getByteFromBuffer() throws IOException {
+    private synchronized byte getByteFromBuffer() throws IOException {
         while (true) {
             if (currentReadPosition != dataSizeInBuffer) {
                 return buffer[currentReadPosition++];
@@ -62,5 +64,14 @@ public class InputStreamBuffer {
 
     public void close() throws IOException {
         inputStream.close();
+    }
+
+    public boolean isDataReady() {
+        try {
+            return 0<(dataSizeInBuffer-currentReadPosition) || 0<inputStream.available();
+        } catch (IOException ex) {
+            Logger.getLogger(InputStreamBuffer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 }

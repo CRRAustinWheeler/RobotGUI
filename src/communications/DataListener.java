@@ -9,5 +9,5 @@ package communications;
  * @author laptop
  */
 public interface DataListener {
-    public void getData();
+    public void pushData(byte[] b);
 }

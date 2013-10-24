@@ -57,6 +57,15 @@ public class PrimitiveSerializer {
         return arr[0] != 0x00;
     }
 
+    public static String bytesToString(byte[] arr) {
+        StringBuilder sb = new StringBuilder(arr.length/2);
+        for (int i = 0; i < arr.length; i+=2) {
+            sb.append((char) (((char) (arr[i] & 0xff))
+                | (((char) (arr[i+1] & 0xff)) << 8)));
+        }
+        return sb.toString();
+    }
+
     public static byte[] toByteArray(short s) {
         return new byte[]{
                     (byte) ((s) & 0xff),
@@ -103,5 +112,27 @@ public class PrimitiveSerializer {
         } else {
             return new byte[]{0x00};
         }
+    }
+
+    public static byte[] toByteArray(String s) {
+        byte[] b = new byte[s.length() * 2];
+        for (int i = 0; i < s.length(); i++) {
+            b[i * 2] = (byte) ((s.charAt(i)) & 0xff);
+            b[(i * 2) + 1] = (byte) ((s.charAt(i) >> 8) & 0xff);
+        }
+        return b;
+    }
+
+    public static byte[] toByteArrayWithLength(String s) {
+        byte[] b = new byte[(s.length() * 2) + 4];
+        b[0] = (byte) ((s.length()) & 0xff);
+        b[1] = (byte) ((s.length() >> 8) & 0xff);
+        b[2] = (byte) ((s.length() >> 16) & 0xff);
+        b[3] = (byte) ((s.length() >> 24) & 0xff);
+        for (int i = 0; i < s.length(); i++) {
+            b[(i * 2) + 4] = (byte) ((s.charAt(i)) & 0xff);
+            b[(i * 2) + 5] = (byte) ((s.charAt(i) >> 8) & 0xff);
+        }
+        return b;
     }
 }

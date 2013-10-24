@@ -5,15 +5,20 @@
 package communications;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sun.net.ConnectionResetException;
 
 /**
  *
  * @author laptop
  */
-public class SubsocketManager {
+public class SubsocketManager implements Runnable {
 
+    private Thread thread;
     private String[] tags = new String[65536];
     private Subsocket[] subsockets = new Subsocket[65536];
+    private int numberOfSubsockets = 0;
     private ArrayList<SubsocketListener> subsocketListeners =
             new ArrayList<SubsocketListener>();
     private ArrayList<ConnectionListener> connectionListeners =
@@ -23,6 +28,8 @@ public class SubsocketManager {
 
     public SubsocketManager() {
         serverSock = new ServerSock(this);
+        thread = new Thread(this);
+        thread.start();
     }
 
     int lookUpString(String tag) {
@@ -36,9 +43,10 @@ public class SubsocketManager {
 
     synchronized void sendData(int i, byte[] bytes) {
         if (connected) {
-            if (i >= 0 && i < 65536 && bytes.length > 0 && bytes.length <= 256) {
+
+            if (i >= 0 && i < 65536 && bytes.length > 0 && bytes.length <= 65536) {
                 serverSock.writeBytes(PrimitiveSerializer.toByteArray((char) i));
-                serverSock.writeByte((byte) (bytes.length - 129));
+                serverSock.writeBytes(PrimitiveSerializer.toByteArray((char) bytes.length));
                 for (byte b : bytes) {
                     serverSock.writeByte(b);
                 }
@@ -66,6 +74,10 @@ public class SubsocketManager {
         return tags.clone();
     }
 
+    public String getTag(int i) {
+        return tags[i];
+    }
+
     public Subsocket getSubsocket(int i) {
         return subsockets[i];
     }
@@ -86,5 +98,43 @@ public class SubsocketManager {
 
     public void removeConnectionListener(ConnectionListener listener) {
         connectionListeners.remove(listener);
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+            }
+
+            serverSock.flush();
+
+            try {
+                while (serverSock.isDataReady()) {
+                    byte[] b = {serverSock.readByte(), serverSock.readByte()};
+                    int i = PrimitiveSerializer.bytesToChar(b);
+                    b[0] = serverSock.readByte();
+                    b[1] = serverSock.readByte();
+                    byte[] bytes = new byte[((int) PrimitiveSerializer.bytesToChar(b)) + 1];
+                    for (int j = 0; j < bytes.length; j++) {
+                        bytes[j] = serverSock.readByte();
+                    }
+                    if (i == 65535) {
+                        subsockets[numberOfSubsockets] =
+                                new Subsocket(this, numberOfSubsockets);
+                        tags[numberOfSubsockets] =
+                                PrimitiveSerializer.bytesToString(bytes);
+                        numberOfSubsockets++;
+                        for (SubsocketListener subsocketListener : subsocketListeners) {
+                            subsocketListener.SubsocketAdded();
+                        }
+                    } else {
+                        subsockets[i].dataListener.pushData(bytes);
+                    }
+                }
+            } catch (ConnectionResetException ex) {
+            }
+        }
     }
 }

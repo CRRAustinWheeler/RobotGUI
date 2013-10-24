@@ -7,6 +7,7 @@ package communications;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import sun.net.ConnectionResetException;
 
 /**
  *
@@ -14,7 +15,6 @@ import java.net.Socket;
  */
 public class ServerSock {
 
-    Thread thread;
     ServerSocket serverSocket;
     Socket connection;
     private InputStreamBuffer inputStreamBuffer;
@@ -32,6 +32,7 @@ public class ServerSock {
 
     private void reconnect() {
         manager.notifyDisconnected();
+        
         boolean retry = true;
         while (retry) {
             retry = false;
@@ -75,7 +76,7 @@ public class ServerSock {
         manager.notifyConnected();
     }
 
-    public synchronized byte readByte() {
+    public synchronized byte readByte() throws ConnectionResetException {
         if (connection == null) {
             reconnect();
         }
@@ -83,11 +84,11 @@ public class ServerSock {
             return inputStreamBuffer.readByte();
         } catch (IOException ex) {
             reconnect();
-            return readByte();
+            throw new ConnectionResetException();
         }
     }
 
-    public synchronized void writeByte(byte b) {
+    public void writeByte(byte b) {
         outputStreamBuffer.writeByte(b);
     }
 
@@ -97,7 +98,7 @@ public class ServerSock {
         }
     }
 
-    public synchronized void flush() {
+    public void flush() {
         if (connection == null) {
             reconnect();
         }
@@ -107,5 +108,9 @@ public class ServerSock {
             reconnect();
 
         }
+    }
+
+    public boolean isDataReady() {
+        return inputStreamBuffer.isDataReady();
     }
 }
