@@ -4,6 +4,8 @@
  */
 package communications;
 
+import communications.listeners.SubsocketListener;
+import communications.listeners.ConnectionListener;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +34,7 @@ public class SubsocketManager implements Runnable {
         thread.start();
     }
 
-    int lookUpString(String tag) {
+    public int lookUpString(String tag) {
         for (int i = 0; i < tags.length; i++) {
             if (tags[i].matches(tag)) {
                 return i;
@@ -125,10 +127,10 @@ public class SubsocketManager implements Runnable {
                                 new Subsocket(this, numberOfSubsockets);
                         tags[numberOfSubsockets] =
                                 PrimitiveSerializer.bytesToString(bytes);
-                        numberOfSubsockets++;
                         for (SubsocketListener subsocketListener : subsocketListeners) {
-                            subsocketListener.SubsocketAdded();
+                            subsocketListener.SubsocketAdded(numberOfSubsockets);
                         }
+                        numberOfSubsockets++;
                     } else {
                         subsockets[i].dataListener.pushData(bytes);
                     }
