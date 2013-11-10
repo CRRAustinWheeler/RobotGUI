@@ -4,11 +4,9 @@
  */
 package communications;
 
-import communications.listeners.SubsocketListener;
 import communications.listeners.ConnectionListener;
+import communications.listeners.SubsocketListener;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import sun.net.ConnectionResetException;
 
 /**

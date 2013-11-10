@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package extensions;
+package resources;
 
 import communications.Subsocket;
 import communications.SubsocketManager;
@@ -14,8 +14,8 @@ import communications.listeners.SubsocketListener;
  *
  * @author laptop
  */
-public abstract class Extension implements
-        SubsocketListener, DataListener, ConnectionListener{
+public abstract class Primitive implements
+        SubsocketListener, DataListener, ConnectionListener {
 
     private String tag;
     private SubsocketManager manager;
@@ -23,7 +23,7 @@ public abstract class Extension implements
 
     protected abstract String getExtCode();
 
-    public Extension(String tag, SubsocketManager manager) {
+    public Primitive(String tag, SubsocketManager manager) {
         this.tag = tag + "." + getExtCode();
         this.manager = manager;
 
@@ -57,5 +57,12 @@ public abstract class Extension implements
 
     @Override
     public void connected() {
+    }
+
+    public class SynchronizedField {
+        private double remoteValue;
+        private double localValue;
+        
+        
     }
 }

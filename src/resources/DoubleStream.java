@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package extensions;
+package resources;
 
 import communications.PrimitiveSerializer;
 import communications.SubsocketManager;
@@ -11,7 +11,7 @@ import communications.SubsocketManager;
  *
  * @author laptop
  */
-public class DoubleStream extends Extension {
+public class DoubleStream extends Primitive {
 
     private Listener listener;
     private boolean dataTransmissionEnabled = false;
@@ -50,7 +50,13 @@ public class DoubleStream extends Extension {
     }
 
     public void sendDouble(double d) {
-        sendData(PrimitiveSerializer.toByteArray(d));
+        if (dataTransmissionEnabled) {
+            if (compressionEnabled) {
+                sendData(PrimitiveSerializer.toByteArray((float)d));
+            } else {
+                sendData(PrimitiveSerializer.toByteArray(d));
+            }
+        }
     }
     //<editor-fold defaultstate="collapsed" desc="remote settings management">
     private char remoteHZsettings = 0;
