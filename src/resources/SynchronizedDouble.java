@@ -15,8 +15,8 @@ public class SynchronizedDouble extends Primitive {
 
     private double d, remote;
 
-    public SynchronizedDouble(String tag, SubsocketManager manager) {
-        super(tag, manager);
+    public SynchronizedDouble(Folder folder, String tag, SubsocketManager manager) {
+        super(folder, tag, manager);
     }
 
     @Override

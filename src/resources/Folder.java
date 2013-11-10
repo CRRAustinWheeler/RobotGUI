@@ -12,7 +12,13 @@ public class Folder {
 
     private String path;
 
-    public Folder(String path) {
+    public Folder(Folder folder, String tag) {
+        String path;
+        if (folder != null) {
+            path = folder.getPath() + "/" + tag;
+        } else {
+            path = tag;
+        }
         String ext = getExtCode();
         if (ext.matches("")) {
             this.path = path;
