@@ -1,37 +1,23 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package resources;
 
-import communications.SubsocketManager;
+import resources.core.Node;
 
-/**
- *
- * @author laptop
- */
-public class RemoteVariable extends Primitive {
-    
+public class RemoteVariable extends Node {
+
     private VariableModificationListener listener;
+    private SynchronizedDouble var, overide;
 
-    public RemoteVariable(String tag, SubsocketManager manager) {
-        super(tag, manager);
+    public RemoteVariable(Node parrent, String tag) {
+        super(parrent, tag);
     }
 
     @Override
     protected String getExtCode() {
         return "var";
     }
-    
+
     public void setListener(VariableModificationListener listener) {
         this.listener = listener;
-    }
-
-    @Override
-    public void pushData(byte[] b) {
-        if (b.length == 1) {
-            
-        }
     }
 
     public interface VariableModificationListener {

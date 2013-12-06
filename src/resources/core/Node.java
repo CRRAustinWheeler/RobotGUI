@@ -2,20 +2,24 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package resources;
+package resources.core;
 
 /**
  *
  * @author laptop
  */
-public class Folder {
+public class Node {
 
     private String path;
 
-    public Folder(Folder folder, String tag) {
+    public Node(String tag) {
+        this(null, tag);
+    }
+
+    public Node(Node parrent, String tag) {
         String path;
-        if (folder != null) {
-            path = folder.getPath() + "/" + tag;
+        if (parrent != null) {
+            path = parrent.getPath() + "/" + tag;
         } else {
             path = tag;
         }
@@ -23,7 +27,7 @@ public class Folder {
         if (ext.matches("")) {
             this.path = path;
         } else {
-            this.path = path + "." + ext;
+            this.path = path + ":" + ext;
         }
     }
 

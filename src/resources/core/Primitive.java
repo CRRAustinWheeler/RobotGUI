@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package resources;
+package resources.core;
 
 import communications.Subsocket;
 import communications.SubsocketManager;
@@ -14,25 +14,25 @@ import communications.listeners.SubsocketListener;
  *
  * @author laptop
  */
-public abstract class Primitive implements
+public abstract class Primitive extends Node implements
         SubsocketListener, DataListener, ConnectionListener {
 
-    private String tag;
     private SubsocketManager manager;
     private Subsocket subsocket;
 
+    @Override
     protected abstract String getExtCode();
 
-    public Primitive(String tag, SubsocketManager manager) {
-        this.tag = tag + "." + getExtCode();
+    public Primitive(Node parrent, String tag, SubsocketManager manager) {
+        super(parrent, tag);
         this.manager = manager;
 
         manager.addSubsocketListener(this);
-        int i = manager.lookUpString(tag);
+        manager.addConnectionListener(this);
+        int i = manager.lookUpString(this.getPath());
         if (i != -1) {
             SubsocketAdded(i);
         }
-        manager.addConnectionListener(this);
     }
 
     protected final void sendData(byte[] b) {
@@ -43,7 +43,7 @@ public abstract class Primitive implements
 
     @Override
     public final synchronized void SubsocketAdded(int subsocket) {
-        if (manager.getTag(subsocket).matches(tag)) {
+        if (manager.getTag(subsocket).matches(getPath())) {
             this.subsocket = manager.getSubsocket(subsocket);
             this.subsocket.dataListener = this;
             manager.removeSubsocketListener(this);
@@ -57,12 +57,5 @@ public abstract class Primitive implements
 
     @Override
     public void connected() {
-    }
-
-    public class SynchronizedField {
-        private double remoteValue;
-        private double localValue;
-        
-        
     }
 }

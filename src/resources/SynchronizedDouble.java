@@ -6,6 +6,9 @@ package resources;
 
 import communications.PrimitiveSerializer;
 import communications.SubsocketManager;
+import resources.core.GenericListener;
+import resources.core.Node;
+import resources.core.Primitive;
 
 /**
  *
@@ -14,9 +17,15 @@ import communications.SubsocketManager;
 public class SynchronizedDouble extends Primitive {
 
     private double d, remote;
+    private GenericListener listener;
 
-    public SynchronizedDouble(Folder folder, String tag, SubsocketManager manager) {
+    public SynchronizedDouble(Node folder, String tag, SubsocketManager manager) { 
         super(folder, tag, manager);
+    }
+    
+    public SynchronizedDouble(Node folder, String tag, SubsocketManager manager, GenericListener listener) { 
+        super(folder, tag, manager);
+        setListener(listener);
     }
 
     @Override
@@ -29,9 +38,18 @@ public class SynchronizedDouble extends Primitive {
         flush();
     }
 
+    public void setListener(GenericListener listener) {
+        this.listener = listener;
+    }
+
+    public double get() {
+        return d;
+    }
+
     @Override
     public void pushData(byte[] b) {
         d = PrimitiveSerializer.bytesToDouble(b);
+        listener.pushData(this, d);
     }
 
     private void flush() {
