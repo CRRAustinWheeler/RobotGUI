@@ -23,8 +23,8 @@ public abstract class Primitive extends Node implements
     @Override
     protected abstract String getExtCode();
 
-    public Primitive(Node parrent, String tag, SubsocketManager manager) {
-        super(parrent, tag);
+    public Primitive(Node parrent, String tag, SubsocketManager manager) {                      
+        super(parrent, tag, manager);
         this.manager = manager;
 
         manager.addSubsocketListener(this);

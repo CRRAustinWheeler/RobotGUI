@@ -7,7 +7,6 @@ package communications;
 import communications.listeners.ConnectionListener;
 import communications.listeners.SubsocketListener;
 import java.util.ArrayList;
-import sun.net.ConnectionResetException;
 
 /**
  *

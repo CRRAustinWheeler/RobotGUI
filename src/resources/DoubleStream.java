@@ -17,16 +17,21 @@ public class DoubleStream extends Node implements GenericListener {
     private GenericListener listener;
     SynchronizedDouble stream;
     SynchronizedDouble dataTransmissionEnabled;//bool
-    SynchronizedDouble maxHZ;// int
+    SynchronizedDouble maxHZ;//int
 
     public DoubleStream(Node folder, String path, SubsocketManager manager) {
         this(null, folder, path, manager);
     }
 
-    public DoubleStream(GenericListener listener, Node node, String tag, SubsocketManager manager) {
-        super(node, tag);
+    public DoubleStream(
+            GenericListener listener,
+            Node node,
+            String tag,
+            SubsocketManager manager) {
+        super(node, tag, manager);
         this.listener = listener;
-        dataTransmissionEnabled = new SynchronizedDouble(this, "transEnabled", manager);
+        dataTransmissionEnabled
+                = new SynchronizedDouble(this, "transEnabled", manager);
         maxHZ = new SynchronizedDouble(this, "HZcap", manager);
         stream = new SynchronizedDouble(this, "stream", manager, this);
     }
@@ -40,7 +45,7 @@ public class DoubleStream extends Node implements GenericListener {
         this.listener = listener;
     }
 
-    public void sendDouble(double d) {
+    public void sendDouble(double d) {//this thing needs work
         if (dataTransmissionEnabled.get() == 1d) {
             stream.setRemote(d);
         }
@@ -62,9 +67,14 @@ public class DoubleStream extends Node implements GenericListener {
         dataTransmissionEnabled.setRemote(1);
     }
 
+    public double get() {
+        return stream.get();
+    }
+
     @Override
     public void pushData(Node node, Object data) {
-        listener.pushData(this, data);
+        Object[] objects = {data, System.currentTimeMillis()};
+        listener.pushData(this, objects);
     }
 }
 /* * * * * Notes * * * * * *\
@@ -74,4 +84,4 @@ public class DoubleStream extends Node implements GenericListener {
  *   enable/disable filter *
  *                         *
  * TODO: time sync         *
-\* * * * * * * * * * * * * */
+ * * * * * * * * * * * * * */
