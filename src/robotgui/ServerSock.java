@@ -71,6 +71,7 @@ public class ServerSock implements SimpleSock {
                 retry = true;
             }
         }
+        System.out.println("connected");
     }
 
     @Override

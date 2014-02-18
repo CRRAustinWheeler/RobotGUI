@@ -147,6 +147,7 @@ public class PID extends javax.swing.JPanel implements DSMListener, SRAListener 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        indicator1 = new robotgui.Indicator();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
         graph1 = new robotgui.Graph();
@@ -176,7 +177,7 @@ public class PID extends javax.swing.JPanel implements DSMListener, SRAListener 
         );
         graph1Layout.setVerticalGroup(
             graph1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 104, Short.MAX_VALUE)
+            .addGap(0, 52, Short.MAX_VALUE)
         );
 
         jLabel1.setText("P:");
@@ -348,6 +349,7 @@ public class PID extends javax.swing.JPanel implements DSMListener, SRAListener 
     private javax.swing.JTextField es;
     private robotgui.Graph graph1;
     private javax.swing.JTextField i;
+    private robotgui.Indicator indicator1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

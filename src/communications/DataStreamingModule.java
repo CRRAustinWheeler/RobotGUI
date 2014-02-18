@@ -72,6 +72,7 @@ public class DataStreamingModule {
 
             //search for a prexisting streamCommunicationsThread
             DataStream stream = getStream(((Packet) updates.elementAt(i)).name);
+//            System.out.println("packet: " + ((Packet) updates.elementAt(i)).name + " : " + ((Packet) updates.elementAt(i)).val);
 
             //if one is found...
             if (stream != null) {
@@ -88,9 +89,9 @@ public class DataStreamingModule {
 
         //notify listeners
         for (int i = 0; i < DSMListeners.size(); i++) {
-            ((DSMListener)DSMListeners.get(i)).alertToDSMUpdates();
+            ((DSMListener) DSMListeners.get(i)).alertToDSMUpdates();
             if (newStream) {
-                ((DSMListener)DSMListeners.get(i)).alertToNewStreams();
+                ((DSMListener) DSMListeners.get(i)).alertToNewStreams();
             }
         }
 
