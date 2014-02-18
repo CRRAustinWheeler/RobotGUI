@@ -1,6 +1,7 @@
 package com.coderedrobotics.dashboard.dashboard;
 
 import java.awt.Component;
+import javax.swing.JOptionPane;
 
 /**
  * JFrame form for dashboard. This is basically an empty container, and tabs are
@@ -20,14 +21,9 @@ class MainGUI extends javax.swing.JFrame {
     public MainGUI() {
         initComponents();
         this.setLocation(0, 0);
-        this.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                Debug.println("[API] Shutting down...", Debug.STANDARD);
-                Start.unloadPlugins();
-                Debug.println("[API] Plugin unloading complete.\n[API] Exiting...", Debug.STANDARD);
-            }
-        });
+
+        setupCloseListener();
+
         pinfo = new PluginsInfo();
         tabs.addTab("Installed Plugins", pinfo);
     }
@@ -42,6 +38,27 @@ class MainGUI extends javax.swing.JFrame {
         tabs.addTab(title, comp);
     }
 
+    private void setupCloseListener() {
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            MainGUI gui;
+            
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                int close = JOptionPane.showConfirmDialog(gui, "Are you sure you want to close?", "Confirm Close", JOptionPane.YES_NO_OPTION);
+                if (close == 1) {
+                    Debug.println("[API] Shutting down...", Debug.STANDARD);
+                    Start.unloadPlugins();
+                    Debug.println("[API] Plugin unloading complete.\n[API] Exiting...", Debug.STANDARD);
+                }
+            }
+            
+            public java.awt.event.WindowAdapter init (MainGUI gui){
+                this.gui = gui;
+                return this;
+            }
+        }.init(this));
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -53,12 +70,11 @@ class MainGUI extends javax.swing.JFrame {
 
         tabs = new javax.swing.JTabbedPane();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Code Red Robotics Dashboard");
         setMinimumSize(new java.awt.Dimension(1024, 400));
         setName("jFrame"); // NOI18N
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1024, 400));
 
         tabs.setTabPlacement(javax.swing.JTabbedPane.LEFT);
 

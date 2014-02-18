@@ -12,6 +12,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.Policy;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,10 +24,10 @@ import javax.swing.JOptionPane;
 class Start {
 
     static ArrayList<Plugin> plugins;
-    
+
     private static MainGUI gui;
     private static LoadingScreen loading;
-    
+
     static DataStreamingModule dataStreamingModule;
     static ServerSock serverSock;
     static CommunicationsThread communicationsThread;
@@ -102,7 +104,7 @@ class Start {
                         plugin.load(dataStreamingModule, synchronizedRegisterArray);
                     } catch (Exception e) {
                         Debug.println("[API] An error occured loading plugin: " + plugin.pluginName(), Debug.WARNING);
-                        e.printStackTrace();
+                        Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, e);
                         JOptionPane.showMessageDialog(gui, "An error occured while loading the plugin: " + plugin.pluginName(), "Load Error", JOptionPane.ERROR_MESSAGE);
                         continue;
                     }
@@ -184,7 +186,6 @@ class Start {
             } catch (Exception e) {
                 Debug.println("[API] An error occured unloading plugin: " + plugin.pluginName(), Debug.STANDARD);
                 JOptionPane.showMessageDialog(gui, "An error occured while unloading the plugin: " + plugin.pluginName(), "Unload Error", JOptionPane.ERROR_MESSAGE);
-                continue;
             }
         }
         getPluginList();
