@@ -49,6 +49,7 @@ class MainGUI extends javax.swing.JFrame {
                     Debug.println("[API] Shutting down...", Debug.STANDARD);
                     Start.unloadPlugins();
                     Debug.println("[API] Plugin unloading complete.\n[API] Exiting...", Debug.STANDARD);
+                    System.exit(0);
                 }
             }
             
