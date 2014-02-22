@@ -45,7 +45,7 @@ class MainGUI extends javax.swing.JFrame {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 int close = JOptionPane.showConfirmDialog(gui, "Are you sure you want to close?", "Confirm Close", JOptionPane.YES_NO_OPTION);
-                if (close == 1) {
+                if (close == 0) {
                     Debug.println("[API] Shutting down...", Debug.STANDARD);
                     Start.unloadPlugins();
                     Debug.println("[API] Plugin unloading complete.\n[API] Exiting...", Debug.STANDARD);
