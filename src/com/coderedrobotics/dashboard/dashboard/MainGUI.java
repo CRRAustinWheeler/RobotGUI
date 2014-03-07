@@ -37,6 +37,10 @@ class MainGUI extends javax.swing.JFrame {
     void addPluginGUI(String title, Component comp) {
         tabs.addTab(title, comp);
     }
+    
+    public void setOpenTab(int i){
+        tabs.setSelectedIndex(i);
+    }
 
     private void setupCloseListener() {
         this.addWindowListener(new java.awt.event.WindowAdapter() {

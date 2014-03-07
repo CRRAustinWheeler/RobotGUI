@@ -150,8 +150,14 @@ class Start {
 
             if (plugins.isEmpty()) {
                 JOptionPane.showMessageDialog(gui, "No plugins were found.  Please verify that there a"
-                        + "re valid plugins located in the\"plugins\" folder.", "Load Error", JOptionPane.ERROR_MESSAGE);
+                        + "re valid plugins located in " + dir.getAbsolutePath() + ".", "Load Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
+            }
+            
+            for (Plugin plugin : plugins){
+                if ("Operator HUD".equals(plugin.pluginName())) {
+                    gui.setOpenTab(plugins.indexOf(plugin) + 1);
+                }
             }
 
         } else {

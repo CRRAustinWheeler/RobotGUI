@@ -1,6 +1,7 @@
 package com.coderedrobotics.dashboard.communications;
 
 import com.coderedrobotics.dashboard.dashboard.Debug;
+import com.coderedrobotics.dashboard.dashboard.PluginsInfo;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,6 +28,7 @@ public class ServerSock implements SimpleSock {
 
     private void reconnect() {
         boolean retry = true;
+        PluginsInfo.setConnected(false);
         while (retry) {
             retry = false;
             try {
@@ -56,6 +58,9 @@ public class ServerSock implements SimpleSock {
                     Debug.println("[Backend] Server down", Debug.STANDARD);
                 }
             }
+            
+            PluginsInfo.setConnected(true);
+            
             //setup the reader and writer objects
             try {
                 outputStreamBuffer =
