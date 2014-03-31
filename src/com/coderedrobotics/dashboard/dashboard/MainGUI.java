@@ -81,6 +81,7 @@ class MainGUI extends javax.swing.JFrame {
         setName("jFrame"); // NOI18N
         setUndecorated(true);
 
+        tabs.setBackground(new java.awt.Color(43, 43, 43));
         tabs.setTabPlacement(javax.swing.JTabbedPane.LEFT);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

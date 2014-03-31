@@ -28,14 +28,6 @@ public class PluginsInfo extends javax.swing.JPanel {
         list.setModel(lm);
         list.setSelectedIndex(list.getFirstVisibleIndex());
     }
-
-    public static void setConnected(boolean connected) {
-        if (connected) {
-            connectionText.setText("Connected");
-        } else {
-            connectionText.setText("No Connection");
-        }
-    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -59,11 +51,10 @@ public class PluginsInfo extends javax.swing.JPanel {
         jSeparator1 = new javax.swing.JSeparator();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        connectionText = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(1024, 400));
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Plugin List"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plugin List", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 0)));
 
         list.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -95,6 +86,7 @@ public class PluginsInfo extends javax.swing.JPanel {
         purl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         purl.setText("[URL]");
 
+        gstatus.setForeground(new java.awt.Color(255, 255, 255));
         gstatus.setText("[GUI STATUS]");
 
         pdesc.setEditable(false);
@@ -105,12 +97,11 @@ public class PluginsInfo extends javax.swing.JPanel {
         pdesc.setWrapStyleWord(true);
         jScrollPane2.setViewportView(pdesc);
 
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Dashboard API Version: 1.0");
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/coderedrobotics/dashboard/coderedsmall.png"))); // NOI18N
-
-        connectionText.setText("No Connection");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -129,11 +120,9 @@ public class PluginsInfo extends javax.swing.JPanel {
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(gstatus))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(connectionText)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(gstatus)
+                            .addComponent(jLabel1))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -154,11 +143,9 @@ public class PluginsInfo extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(connectionText))
+                .addComponent(jLabel1)
                 .addGap(5, 5, 5))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -187,7 +174,6 @@ public class PluginsInfo extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_listValueChanged
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private static javax.swing.JLabel connectionText;
     private javax.swing.JLabel gstatus;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

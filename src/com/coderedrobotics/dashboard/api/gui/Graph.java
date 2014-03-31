@@ -5,6 +5,7 @@ import com.coderedrobotics.dashboard.communications.Packet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  *
@@ -24,6 +25,7 @@ public class Graph extends javax.swing.JPanel implements Runnable {
         initComponents();
         streams = new ArrayList();
         thread = new Thread(this);
+        thread.setName("Graphing Thread " + Math.abs(new Random().nextInt()));
         thread.start();
     }
 
