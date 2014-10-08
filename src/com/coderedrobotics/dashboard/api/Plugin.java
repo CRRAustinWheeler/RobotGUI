@@ -1,6 +1,7 @@
 package com.coderedrobotics.dashboard.api;
 
 import java.awt.Component;
+import java.io.Serializable;
 import java.net.URL;
 
 /**
@@ -51,7 +52,7 @@ import java.net.URL;
  * @see #pluginURL()
  * @since Dash 2.0
  */
-public interface Plugin {
+public interface Plugin extends Serializable {
 
     /**
      * Called when a plugin is first loaded. This method must return or the
@@ -135,4 +136,16 @@ public interface Plugin {
      * @return a URL
      */
     public URL pluginURL();
+    
+    /**
+     * The unique ID of the plugin.  This ID must be unique across plugins of 
+     * ALL vendors.  Therefore, it is recommended that a plugin's ID consists of:
+     * teamnumber + teamname + pluginname.  You may add anything you wish to the end.
+     * The ID is never displayed to the user, but is very important to the system.
+     * Do not put spaces in the ID.  Do not use these characters: "/", "\", "^", 
+     * or "~".  You may use dashes.
+     * 
+     * @return a String containing the plugin ID.
+     */
+    public String pluginID();
 }

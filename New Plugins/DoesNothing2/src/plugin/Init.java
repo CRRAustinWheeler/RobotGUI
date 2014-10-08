@@ -14,13 +14,9 @@ import java.util.logging.Logger;
  */
 public class Init implements Plugin {
 
-    Driver driver;
-    Settings settings;
-
     @Override
     public void init() {
-        driver = new Driver();
-        settings = new Settings();
+        // do nothing
     }
 
     @Override
@@ -35,23 +31,22 @@ public class Init implements Plugin {
 
     @Override
     public Component getSettingsGUI() {
-        return settings;
+        return null;
     }
 
     @Override
     public boolean createGUI() {
-        return true;
+        return false;
     }
 
     @Override
     public PluginGUITab[] getGUITabs() {
-        PluginGUITab[] gui = {new PluginGUITab("Driver", driver, true)};
-        return gui;
+        return null;
     }
 
     @Override
     public String pluginName() {
-        return "Operator HUD";
+        return "Does Nothing 2";
     }
 
     @Override
@@ -66,13 +61,7 @@ public class Init implements Plugin {
 
     @Override
     public String pluginDescription() {
-        return "The Operator HUD Plugin is custom made by Code Red Robotics "
-                + "every year to fit the current game, and our robot design.  "
-                + "It relays important information and graphs to our Robot "
-                + "Operators on the field.  Even though it is written to fit "
-                + "the needs of our robot, The Operator HUD plugin comes bund"
-                + "led with the Dashboard essentials pack, to reference as an "
-                + "example if desired.  ";
+        return "This plugin does absolutely nothing.";
     }
 
     @Override
@@ -83,5 +72,10 @@ public class Init implements Plugin {
             Logger.getLogger(Init.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
+    }
+
+    @Override
+    public String pluginID() {
+        return "2771CodeRedRobotics-DoesNothing2";
     }
 }

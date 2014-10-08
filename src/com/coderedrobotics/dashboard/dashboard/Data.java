@@ -20,18 +20,19 @@ import java.util.logging.Logger;
  */
 class Data implements Serializable {
 
-    private final ArrayList<String> pluginNames;
-    private ArrayList<Boolean> load;
-    private ArrayList<Boolean> driverModeBackup;
+    private ArrayList<String> pluginNames;
+    private ArrayList<String> driverModeBackup;
+    private ArrayList<String> dontLoadThesePluginIDs;
     private String robotIP = "10.27.71.2";
     private String customPort = "";
     private boolean snapDash = false;
     private boolean driverMode = false;
+    private String pluginsPath= "plugins";
 
     private static Data data = null;
 
     Data() {
-        load = new ArrayList<>();
+        dontLoadThesePluginIDs = new ArrayList<>();
         pluginNames = new ArrayList<>();
     }
 
@@ -45,35 +46,38 @@ class Data implements Serializable {
     static void setInstance(Data data) {
         Data.data = data;
     }
-
-    ArrayList<String> getPluginNames() {
-        return pluginNames;
+    
+    void setPlugins(ArrayList<Plugin> plugins) {
+        pluginNames.clear();
+        for (Plugin plugin : plugins) {
+            pluginNames.add(plugin.pluginName());
+        }
     }
 
-    ArrayList<Boolean> getPluginsToLoad() {
-        return load;
+    ArrayList<String> getPluginsToNOTLoad() {
+        return dontLoadThesePluginIDs;
     }
 
-    void setPluginLoadable(String name, boolean load) {
-        for (String pluginName : pluginNames) {
-            if (pluginName.equals(name)) {
-                this.load.set(pluginNames.indexOf(name), load);
-            }
+    synchronized void setLoadPlugin(String id, boolean load) {
+        this.dontLoadThesePluginIDs.remove(id); // no duplicates, plus we might remove anyway
+        if (!load) {
+            this.dontLoadThesePluginIDs.add(id);
         }
     }
 
     void activateDriverMode(boolean activated) {
         if (activated) {
-            driverModeBackup = load;
-            for (String plugin : pluginNames) {
-                if (!"Operator HUD".equals(plugin)) {
-                    load.set(pluginNames.indexOf(plugin), false);
-                } else {
-                    load.set(pluginNames.indexOf(plugin), true);
+            driverModeBackup = (ArrayList<String>) (dontLoadThesePluginIDs.clone());
+            dontLoadThesePluginIDs.clear();
+            for (String name : pluginNames) {
+                System.out.println("[DEBUG] DriverMode name: " + name);
+                if (!"Operator HUD".equals(name)) {
+                    dontLoadThesePluginIDs.add(Start.getPlugin(name).pluginID());
+                    System.out.println("[DEBUG] DriverMode found non match: " + name);
                 }
             }
         } else {
-            load = driverModeBackup;
+            dontLoadThesePluginIDs = (ArrayList<String>) (driverModeBackup.clone());
         }
         driverMode = activated;
     }
@@ -106,8 +110,16 @@ class Data implements Serializable {
         this.snapDash = snapDash;
     }
 
+    public String getPluginsPath() {
+        return pluginsPath;
+    }
+
+    public void setPluginsPath(String pluginsPath) {
+        this.pluginsPath = pluginsPath;
+    }
+
     void writeMemory() {
-        try (FileOutputStream fileOut = new FileOutputStream("plugins" + File.separator + "dashboard");
+        try (FileOutputStream fileOut = new FileOutputStream("dashboard");
                 ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
             out.writeObject(Data.getInstance());
             out.close();
@@ -118,7 +130,7 @@ class Data implements Serializable {
     }
 
     static void loadInfo() {
-        File file = new File("plugins" + File.separator + "dashboard");
+        File file = new File("dashboard");
         try {
             if (!file.exists()) {
                 file.createNewFile();
@@ -138,13 +150,5 @@ class Data implements Serializable {
         } catch (ClassNotFoundException | IOException ex) {
             Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    synchronized void cleanUp(ArrayList<Plugin> plugins, ArrayList<Boolean> pluginsToLoad) {
-        pluginNames.clear();
-        for (Plugin plugin : plugins) {
-            pluginNames.add(plugin.pluginName());
-        }
-        load = pluginsToLoad;
     }
 }

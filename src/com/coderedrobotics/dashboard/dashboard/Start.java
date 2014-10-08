@@ -86,9 +86,7 @@ class Start {
         //<editor-fold defaultstate="collapsed" desc="Setup Data">
         Data.loadInfo();
         Data data = Data.getInstance();
-        ArrayList<String> pluginNames = data.getPluginNames();
-        ArrayList<Boolean> pluginsToLoad = data.getPluginsToLoad();
-        ArrayList<Boolean> newPluginsToLoad = new ArrayList<>();
+        ArrayList<String> idsToNotLoad = data.getPluginsToNOTLoad();
 
         if ("".equals(data.getRobotIP())) {
             data.setRobotIP("10.27.71.2");
@@ -106,10 +104,11 @@ class Start {
         optionsPanel.setCustomPort(data.getCustomPort());
         optionsPanel.setSnap(data.isSnapDash());
         optionsPanel.setDriverMode(data.isDriverModeActivated());
+        optionsPanel.setPluginsPath(data.getPluginsPath());
         //</editor-fold>
 
         // Go through all the .jar files in the "plugins" folder.
-        File dir = new File("plugins");
+        File dir = new File(data.getPluginsPath());
         if (dir.exists() && dir.isDirectory()) {
             String[] files = dir.list();
             int completedPlugins = 0;
@@ -119,32 +118,18 @@ class Start {
                         continue; // End this loop of the for loop and move on
                     }
 
-                    boolean newPlugin = false;
-
                     //<editor-fold defaultstate="collapsed" desc="Load plugin">
                     File jarFile = new File("plugins" + File.separator + file);
                     ClassLoader loader = URLClassLoader.newInstance(new URL[]{jarFile.toURI().toURL()});
                     final Plugin plugin = (Plugin) loader.loadClass("plugin.Init").newInstance();
 
                     plugins.add(plugin);
-                    try {
-                        newPluginsToLoad.add(pluginsToLoad.get(pluginNames.indexOf(plugin.pluginName())));
-                    } catch (ArrayIndexOutOfBoundsException ex) {
-                        newPlugin = true;
-                        newPluginsToLoad.add(true);
-                    }
                     pinfo.addPlugin(plugin);
                     //</editor-fold>
 
                     //<editor-fold defaultstate="collapsed" desc="Plugin init(), run(), and GUI creation">
                     try {
-                        boolean doIt = false;
-                        if (newPlugin) {
-                            doIt = true;
-                        } else if (pluginsToLoad.get(pluginNames.indexOf(plugin.pluginName()))) {
-                            doIt = true;
-                        }
-                        if(doIt) {
+                        if (!idsToNotLoad.contains(plugin.pluginID())) {
                             //<editor-fold defaultstate="collapsed" desc="Call Plugin.init()">
                             try {
                                 plugin.init();
@@ -165,7 +150,7 @@ class Start {
                                     }
                                 }
                             }
-                    //</editor-fold>
+                          //</editor-fold>
 
                             //<editor-fold defaultstate="collapsed" desc="Call Plugin.run() in new Thread">
                             Thread t = new Thread(new Runnable() {
@@ -190,9 +175,13 @@ class Start {
 
                     }
                     //</editor-fold>
-
-                    Debug.println("[API] Loaded plugin: " + plugin.pluginName()
-                            + " with " + plugin.getGUITabs().length + " GUI tabs.", Debug.STANDARD);
+                    try {
+                        Debug.println("[API] Loaded plugin: " + plugin.pluginName()
+                                + " with " + plugin.getGUITabs().length + " GUI tabs.", Debug.STANDARD);
+                    } catch (NullPointerException ex) {
+                        Debug.println("[API] Loaded plugin: " + plugin.pluginName()
+                                + " with no GUI tabs.", Debug.STANDARD);
+                    }
                 } catch (MalformedURLException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
                     System.err.println(ex);
                 }
@@ -222,7 +211,7 @@ class Start {
             }
             //</editor-fold>
 
-            data.cleanUp(plugins, newPluginsToLoad);
+            data.setPlugins(plugins);
             pinfo.list.setSelectedIndex(0);
 
         } else {
@@ -265,5 +254,14 @@ class Start {
      */
     static ArrayList getPluginList() {
         return plugins;
+    }
+
+    static Plugin getPlugin(String name) {
+        for (Plugin plugin : plugins) {
+            if (name.equals(plugin.pluginName())) {
+                return plugin;
+            }
+        }
+        return null;
     }
 }

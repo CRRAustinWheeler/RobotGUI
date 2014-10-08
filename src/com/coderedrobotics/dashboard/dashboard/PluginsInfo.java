@@ -173,7 +173,7 @@ public class PluginsInfo extends javax.swing.JPanel {
         } else {
             settings.setEnabled(false);
         }
-        load.setSelected(Data.getInstance().getPluginsToLoad().get(Data.getInstance().getPluginNames().indexOf(plugin.pluginName())));
+        load.setSelected(!Data.getInstance().getPluginsToNOTLoad().contains(plugin.pluginID()));
         load.setEnabled(!Data.getInstance().isDriverModeActivated());
         pluginInfo.setText(info);
     }//GEN-LAST:event_listValueChanged
@@ -206,7 +206,7 @@ public class PluginsInfo extends javax.swing.JPanel {
     }//GEN-LAST:event_settingsActionPerformed
 
     private void loadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadActionPerformed
-        Data.getInstance().setPluginLoadable(plugins.get(list.getSelectedIndex()).pluginName(), load.isSelected());
+        Data.getInstance().setLoadPlugin(plugins.get(list.getSelectedIndex()).pluginID(), load.isSelected());
     }//GEN-LAST:event_loadActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
