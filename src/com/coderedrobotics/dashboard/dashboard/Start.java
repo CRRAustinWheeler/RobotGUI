@@ -18,13 +18,15 @@ import com.coderedrobotics.dashboard.communications.Connection;
  *
  * @author Michael
  */
-class Start {
+public class Start {
 
     static ArrayList<Plugin> plugins;
 
     private static MainGUI gui;
     private static LoadingScreen loading;
 
+    public static boolean isLoading = true;
+    
     /**
      * Program main entry point, called by the JVM.
      *
@@ -70,9 +72,9 @@ class Start {
      */
     private Start() {
         loading.setProgress(5);
-        init(); // Setup the Connection Thread.
-        loading.setProgress(20);
         loadPlugins(); // Load all of the plugins
+        loading.setProgress(95);
+        startNetwork(); // Setup the Connection Thread.
         loading.setProgress(100);
     }
 
@@ -186,7 +188,7 @@ class Start {
                     System.err.println(ex);
                 }
                 completedPlugins++;
-                loading.setProgress(20 + (int) (80 * completedPlugins / files.length));
+                loading.setProgress(5 + (int) (90 * completedPlugins / files.length));
             }
 
             gui.addPluginGUI("Options", gui.getOptionsContainer());
@@ -225,8 +227,11 @@ class Start {
         }
     }
 
-    private void init() {
-        Connection.getInstance(); // Start the connection thread
+    private void startNetwork() {
+//        isLoading = false;
+//        Connection.getInstance().notifyAll();
+        Connection.getInstance().unlock(); // Start the connection thread
+        isLoading = false;
     }
 
     /**

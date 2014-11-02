@@ -1,13 +1,5 @@
 package com.coderedrobotics.dashboard.communications;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import com.coderedrobotics.dashboard.communications.exceptions.ConnectionResetException;
 import com.coderedrobotics.dashboard.communications.exceptions.InvalidRouteException;
 import com.coderedrobotics.dashboard.communications.exceptions.NotMultiplexedException;
@@ -16,6 +8,15 @@ import com.coderedrobotics.dashboard.communications.exceptions.RouteException;
 import com.coderedrobotics.dashboard.communications.listeners.ConnectionListener;
 import com.coderedrobotics.dashboard.communications.listeners.MultiplexingListener;
 import com.coderedrobotics.dashboard.communications.listeners.SubsocketListener;
+import com.coderedrobotics.dashboard.dashboard.Start;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The main Connection Thread that manages the TCP connection, sends and listens
@@ -39,10 +40,12 @@ public class Connection {
     private final PrivateStuff privateStuff;
     private Thread thread;
 
-    private static String ADDRESS = "10.27.71.2";
+    private static String ADDRESS = "localhost";
     private static int PORT = 1180;
 
-    private static final ArrayList<ConnectionListener> connectionListeners = new ArrayList<>();
+    private static final CopyOnWriteArrayList<ConnectionListener> connectionListeners = new CopyOnWriteArrayList<>();
+
+    private final Object lock = new Object();
 
     private Connection() {
         idFactory = new IDFactory(this);
@@ -51,6 +54,12 @@ public class Connection {
         privateStuff = new PrivateStuff();
         setupListeners();
         start();
+    }
+
+    public void unlock() {
+        synchronized (lock) {
+            lock.notify();
+        }
     }
 
     /**
@@ -101,7 +110,7 @@ public class Connection {
      *
      * @param listener a ConnectionListener
      */
-    public static void addConnectionListener(ConnectionListener listener) {
+    public synchronized static void addConnectionListener(ConnectionListener listener) {
         connectionListeners.remove(listener);
         connectionListeners.add(listener);
     }
@@ -116,14 +125,14 @@ public class Connection {
         connectionListeners.remove(listener);
     }
 
-    private static void alertConnected() {
+    private synchronized static void alertConnected() {
+        System.out.println("[NETWORK] Connected");
         for (ConnectionListener listener : connectionListeners) {
             listener.connected();
         }
-        System.out.println("[NETWORK] Connected");
     }
 
-    private static void alertDisconnected() {
+    private synchronized static void alertDisconnected() {
         for (ConnectionListener listener : connectionListeners) {
             listener.disconnected();
         }
@@ -143,6 +152,16 @@ public class Connection {
     @SuppressWarnings("SleepWhileInLoop")
     private void reconnect() {
         alertDisconnected();
+
+        if (Start.isLoading) {
+            synchronized (lock) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
 
         boolean retry = true;
         while (retry) {
@@ -182,7 +201,61 @@ public class Connection {
             }
         }
 
+        // DON'T ALLOW ANY OTHER TRAFFIC UNTIL WE KNOW ABOUT THE CURRENT TREE STRUCTURE:
+        boolean run = true;
+        while (run) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+            }
+
+            flush();
+
+            try {
+                while (input.available() > 0 || tcpConnection.getInputStream().available() > 0) {
+                    int id = readSubsocketID();
+                    byte[] length = {readByte(), readByte()};
+                    int l = (int) (PrimitiveSerializer.bytesToChar(length));
+                    byte[] data = new byte[(int) (PrimitiveSerializer.bytesToChar(length))];
+                    for (int j = 0; j < data.length; j++) {
+                        data[j] = readByte();
+                    }
+
+                    try {
+                        String route = IDFactory.getRoute(id);
+                        if ("control".equals(route)) {
+                            if (data[0] == 0) {
+                                byte[] b = new byte[1];
+                                b[0] = 0;
+                                controlSocket.sendData(b);
+                                run = false;
+                                break;
+                            } else {
+                                controlSocket.pushData(data);
+                            }
+                        }
+                    } catch (RouteException ex) {
+                        Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            } catch (ConnectionResetException ex) {
+            } catch (IOException ex) {
+                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                reconnect();
+            }
+        }
+        
+        System.out.println("BEGINNING ALERTS");
+
         alertConnected();
+    }
+
+    public void disconnect() {
+        byte[] routeBytes = PrimitiveSerializer.toByteArray("r"); // doesn't matter, but required
+        byte[] data = new byte[routeBytes.length + 1];
+        data[0] = 5; // Bye Code
+        System.arraycopy(routeBytes, 0, data, 1, routeBytes.length);
+        controlSocket.sendData(data);
     }
 
     synchronized byte readByte() throws ConnectionResetException {
@@ -200,6 +273,7 @@ public class Connection {
     void writeByte(byte b) {
         try {
             output.write(b);
+            System.out.println("WRITE: " + b);
         } catch (IOException ex) {
             reconnect();
             throw new ConnectionResetException();

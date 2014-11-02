@@ -1,5 +1,6 @@
 package com.coderedrobotics.dashboard.dashboard;
 
+import com.coderedrobotics.dashboard.communications.Connection;
 import java.awt.Component;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -98,6 +99,7 @@ class MainGUI extends javax.swing.JFrame {
                 int close = JOptionPane.showConfirmDialog(gui, "Are you sure you want to close?", "Confirm Close", JOptionPane.YES_NO_OPTION);
                 if (close == 0) {
                     Debug.println("[API] Shutting down...", Debug.STANDARD);
+                    Connection.getInstance().disconnect();
                     Data.getInstance().writeMemory();
                     Start.unloadPlugins();
                     Debug.println("[API] Plugin unloading complete.\n[API] Exiting...", Debug.STANDARD);
