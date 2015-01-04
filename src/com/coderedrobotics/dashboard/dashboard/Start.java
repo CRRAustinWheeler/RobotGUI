@@ -72,9 +72,9 @@ public class Start {
      */
     private Start() {
         loading.setProgress(5);
-        loadPlugins(); // Load all of the plugins
-        loading.setProgress(95);
         startNetwork(); // Setup the Connection Thread.
+        loading.setProgress(20);
+        loadPlugins(); // Load all of the plugins
         loading.setProgress(100);
     }
 
@@ -91,7 +91,7 @@ public class Start {
         ArrayList<String> idsToNotLoad = data.getPluginsToNOTLoad();
 
         if ("".equals(data.getRobotIP())) {
-            data.setRobotIP("10.27.71.2");
+            data.setRobotIP("localhost");
         }
 
         Connection.getInstance().setAddress(data.getRobotIP(),
@@ -188,7 +188,7 @@ public class Start {
                     System.err.println(ex);
                 }
                 completedPlugins++;
-                loading.setProgress(5 + (int) (90 * completedPlugins / files.length));
+                loading.setProgress(20 + (int) (80 * completedPlugins / files.length));
             }
 
             gui.addPluginGUI("Options", gui.getOptionsContainer());
@@ -230,7 +230,7 @@ public class Start {
     private void startNetwork() {
 //        isLoading = false;
 //        Connection.getInstance().notifyAll();
-        Connection.getInstance().unlock(); // Start the connection thread
+        Connection.getInstance(); // Start the connection thread
         isLoading = false;
     }
 

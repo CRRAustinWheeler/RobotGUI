@@ -23,7 +23,7 @@ class Data implements Serializable {
     private ArrayList<String> pluginNames;
     private ArrayList<String> driverModeBackup;
     private ArrayList<String> dontLoadThesePluginIDs;
-    private String robotIP = "10.27.71.2";
+    private String robotIP = "localhost";
     private String customPort = "";
     private boolean snapDash = false;
     private boolean driverMode = false;

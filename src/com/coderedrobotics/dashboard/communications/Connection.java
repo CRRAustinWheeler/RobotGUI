@@ -30,7 +30,7 @@ public class Connection {
     private ServerSocket serverSocket;
     private Socket tcpConnection;
     private BufferedInputStream input;
-    private BufferedOutputStream output;
+    private NonblockingOutputBuffer output;
 
     private final ControlSubsocket controlSocket;
     private final RootSubsocket rootSocket;
@@ -45,7 +45,7 @@ public class Connection {
 
     private static final CopyOnWriteArrayList<ConnectionListener> connectionListeners = new CopyOnWriteArrayList<>();
 
-    private final Object lock = new Object();
+    private static boolean connected;
 
     private Connection() {
         idFactory = new IDFactory(this);
@@ -54,12 +54,6 @@ public class Connection {
         privateStuff = new PrivateStuff();
         setupListeners();
         start();
-    }
-
-    public void unlock() {
-        synchronized (lock) {
-            lock.notify();
-        }
     }
 
     /**
@@ -113,6 +107,11 @@ public class Connection {
     public synchronized static void addConnectionListener(ConnectionListener listener) {
         connectionListeners.remove(listener);
         connectionListeners.add(listener);
+        if (connected) {
+            listener.connected();
+        } else {
+            listener.disconnected();
+        }
     }
 
     /**
@@ -126,6 +125,7 @@ public class Connection {
     }
 
     private synchronized static void alertConnected() {
+        connected = true;
         System.out.println("[NETWORK] Connected");
         for (ConnectionListener listener : connectionListeners) {
             listener.connected();
@@ -133,6 +133,7 @@ public class Connection {
     }
 
     private synchronized static void alertDisconnected() {
+        connected = false;
         for (ConnectionListener listener : connectionListeners) {
             listener.disconnected();
         }
@@ -153,16 +154,6 @@ public class Connection {
     private void reconnect() {
         alertDisconnected();
 
-        if (Start.isLoading) {
-            synchronized (lock) {
-                try {
-                    lock.wait();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-
         boolean retry = true;
         while (retry) {
             retry = false;
@@ -179,7 +170,7 @@ public class Connection {
             } catch (IOException ex) {
             }
             tcpConnection = null;
-            while (tcpConnection == null) {//keeps trying to connect
+            while (tcpConnection == null) { //keeps trying to connect
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException ex) {
@@ -187,14 +178,15 @@ public class Connection {
                 }
                 try {
                     tcpConnection = new Socket(ADDRESS, PORT);
+                    System.out.println("[NETWORK] TCP Connection accepted from " + tcpConnection.getInetAddress() + ":" + tcpConnection.getPort());
                 } catch (IOException ex) {
                     tcpConnection = null;
-                    System.out.println("[NETWORK] Failed to connect to server.");
+                    System.out.println("[NETWORK] Failed to connect to server at " + ADDRESS + ":" + PORT);
                 }
             }
             //setup the reader and writer objects
             try {
-                output = new BufferedOutputStream(tcpConnection.getOutputStream());
+                output = new NonblockingOutputBuffer(tcpConnection.getOutputStream());
                 input = new BufferedInputStream(tcpConnection.getInputStream());
             } catch (IOException ex) {
                 retry = true;
@@ -271,13 +263,13 @@ public class Connection {
     }
 
     void writeByte(byte b) {
-        try {
-            output.write(b);
+//        try {
+            output.writeByte(b);
             System.out.println("WRITE: " + b);
-        } catch (IOException ex) {
-            reconnect();
-            throw new ConnectionResetException();
-        }
+//        } catch (IOException ex) {
+//            reconnect();
+//            throw new ConnectionResetException();
+//        }
     }
 
     void writeBytes(byte[] toByteArray) {
