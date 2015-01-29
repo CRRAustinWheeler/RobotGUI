@@ -1,4 +1,6 @@
-/New Plugins/
+New Plugins/
 nbproject/
 build/
-/dist/
+dashboard
+manifest.mf
+build.xml
