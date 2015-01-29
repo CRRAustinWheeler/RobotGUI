@@ -2,10 +2,18 @@ package com.coderedrobotics.dashboard.api.gui;
 
 //import com.coderedrobotics.dashboard.communications.DataStream;
 //import com.coderedrobotics.dashboard.communications.Packet;
+import com.coderedrobotics.dashboard.communications.Connection;
+import com.coderedrobotics.dashboard.communications.PrimitiveSerializer;
+import com.coderedrobotics.dashboard.communications.Subsocket;
+import com.coderedrobotics.dashboard.communications.exceptions.InvalidRouteException;
+import com.coderedrobotics.dashboard.communications.exceptions.NotMultiplexedException;
+import com.coderedrobotics.dashboard.communications.listeners.SubsocketListener;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -14,7 +22,7 @@ import java.util.Random;
 public class Graph extends javax.swing.JPanel implements Runnable {
 
     private double graphTime = -10000;
-//    private ArrayList<GStream> streams;
+    private ArrayList<GStream> streams;
     private double hz = 16;
     private Thread thread;
 
@@ -23,7 +31,7 @@ public class Graph extends javax.swing.JPanel implements Runnable {
      */
     public Graph() {
         initComponents();
-//        streams = new ArrayList();
+        streams = new ArrayList();
         thread = new Thread(this);
         thread.setName("Graphing Thread " + Math.abs(new Random().nextInt()));
         thread.start();
@@ -33,31 +41,31 @@ public class Graph extends javax.swing.JPanel implements Runnable {
         this.hz = hz;
     }
 
-//    public synchronized void addStream(
-//            DataStream dataStream, Color color,
-//            double center, double scale,
-//            boolean drawZero) {
-//        streams.add(new GStream(dataStream, center, scale, color, drawZero));
-//    }
+    public synchronized void addStream(
+            String subsocketPath, Color color,
+            double center, double scale,
+            boolean drawZero) {
+        streams.add(new GStream(new DataStream(subsocketPath), center, scale, color, drawZero));
+    }
 
-//    public synchronized String[] geStreams() {
-//        String[] names = new String[streams.size()];
-//        for (int i = 0; i < streams.size(); i++) {
-//            names[i] = streams.get(i).stream.getName();
-//        }
-//        return names;
-//    }
-//
-//    public synchronized void remoGraphveStream(String stream) {
-//        for (int i = 0; i < streams.size(); i++) {
-//            if (streams.get(i).stream.getName().equals(stream)) {
-//                streams.remove(i);
-//            }
-//        }
-//    }
+    public synchronized String[] geStreams() {
+        String[] names = new String[streams.size()];
+        for (int i = 0; i < streams.size(); i++) {
+            names[i] = streams.get(i).stream.dataStream.mapCompleteRoute();
+        }
+        return names;
+    }
+
+    public synchronized void remoGraphveStream(String stream) {
+        for (int i = 0; i < streams.size(); i++) {
+            if (streams.get(i).stream.dataStream.mapCompleteRoute().equals(stream)) {
+                streams.remove(i);
+            }
+        }
+    }
 
     public synchronized void removeAllStreams() {
-//        streams = new ArrayList();
+        streams = new ArrayList();
     }
 
     public synchronized void setTime(long time) {
@@ -66,40 +74,40 @@ public class Graph extends javax.swing.JPanel implements Runnable {
 
     @Override
     protected synchronized void paintComponent(Graphics g) {
-//        super.paintComponent(g);
-//        Color c;
-//        for (GStream gStream : streams) {
-//            if (gStream.drawZero) {
-//                c = new Color(
-//                        (gStream.color.getRed() + 2048) / 9,
-//                        (gStream.color.getGreen() + 2048) / 9,
-//                        (gStream.color.getBlue() + 2048) / 9);
-//                g.setColor(c);
-//                paintLine(
-//                        System.currentTimeMillis(),
-//                        gStream.center,
-//                        System.currentTimeMillis() + ((long) graphTime),
-//                        gStream.center, g);
-//            }
-//        }
-//        Packet oldPacket;
-//        for (GStream gStream : streams) {
-//            oldPacket = gStream.stream.getLastPacket();
-//            for (int i = 1; i < gStream.stream.getPackets().length
-//                    && oldPacket.time - System.currentTimeMillis()
-//                    > graphTime; i++) {
-//                g.setColor(gStream.color);
-//                paintLine(
-//                        oldPacket.time,
-//                        (oldPacket.val
-//                        * gStream.scale) + gStream.center,
-//                        gStream.stream.getPackets()[i].time,
-//                        (gStream.stream.getPackets()[i].val
-//                        * gStream.scale) + gStream.center, g);
-//                oldPacket = gStream.stream.getPackets()[i];
-//            }
-//
-//        }
+        super.paintComponent(g);
+        Color c;
+        for (GStream gStream : streams) {
+            if (gStream.drawZero) {
+                c = new Color(
+                        (gStream.color.getRed() + 2048) / 9,
+                        (gStream.color.getGreen() + 2048) / 9,
+                        (gStream.color.getBlue() + 2048) / 9);
+                g.setColor(c);
+                paintLine(
+                        System.currentTimeMillis(),
+                        gStream.center,
+                        System.currentTimeMillis() + ((long) graphTime),
+                        gStream.center, g);
+            }
+        }
+        Packet oldPacket;
+        for (GStream gStream : streams) {
+            oldPacket = gStream.stream.getLastPacket();
+            for (int i = 1; i < gStream.stream.getPackets().length
+                    && oldPacket.time - System.currentTimeMillis()
+                    > graphTime; i++) {
+                g.setColor(gStream.color);
+                paintLine(
+                        oldPacket.time,
+                        (oldPacket.val
+                        * gStream.scale) + gStream.center,
+                        gStream.stream.getPackets()[i].time,
+                        (gStream.stream.getPackets()[i].val
+                        * gStream.scale) + gStream.center, g);
+                oldPacket = gStream.stream.getPackets()[i];
+            }
+
+        }
     }
 
     private void paintLine(
@@ -133,26 +141,101 @@ public class Graph extends javax.swing.JPanel implements Runnable {
             }
         }
     }
-//
-//    private class GStream {
-//
-//        private GStream(DataStream stream, double center,
-//                double scale, Color color, boolean drawZero) {
-//            this.stream = stream;
-//            this.center = center;
-//            this.scale = scale;
-//            this.color = color;
-//            this.drawZero = drawZero;
-//        }
-//
-//        private GStream() {
-//        }
-//        DataStream stream;
-//        double center;
-//        double scale;
-//        Color color;
-//        boolean drawZero;
-//    }
+
+    private class GStream {
+
+        private GStream(DataStream stream, double center,
+                double scale, Color color, boolean drawZero) {
+            this.stream = stream;
+            this.center = center;
+            this.scale = scale;
+            this.color = color;
+            this.drawZero = drawZero;
+        }
+
+        private GStream() {
+        }
+        DataStream stream;
+        double center;
+        double scale;
+        Color color;
+        boolean drawZero;
+    }
+
+    class Packet {
+
+        final double val;
+        final long time;
+
+        public Packet(double val) {
+            this.val = val;
+            this.time = System.currentTimeMillis();
+        }
+    }
+
+    class DataStream implements SubsocketListener {
+
+        private ArrayList<Packet> vpackets;
+        private Packet[] apackets;
+        private boolean arrayIsCurrent;
+
+        private Subsocket dataStream;
+
+        DataStream(String subsocketPath) {
+            try {
+                Connection.getInstance().getRootSubsocket().enableMultiplexing().createNewRoute(subsocketPath).addListener(this);
+                vpackets = new ArrayList<>();
+                vpackets.add(new Packet(0));//TODO: remove
+                arrayIsCurrent = false;
+                refreshArray();
+            } catch (NotMultiplexedException | InvalidRouteException ex) {
+                Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        @Override
+        public void incomingData(byte[] data, Subsocket sender) {
+            addPacket(PrimitiveSerializer.bytesToDouble(data));
+        }
+
+        synchronized void addPacket(double val) {
+            vpackets.add(0, new Packet(val));
+            arrayIsCurrent = false;
+        }
+
+        private void refreshArray() {
+            apackets = new Packet[vpackets.size()];
+            for (int i = 0; i < vpackets.size(); i++) {
+                apackets[i] = (Packet) vpackets.get(i);
+            }
+            arrayIsCurrent = true;
+        }
+
+        public synchronized Packet[] getPackets() {
+            if (!arrayIsCurrent) {
+                refreshArray();
+            }
+            return apackets;
+        }
+
+        public synchronized Packet getLastPacket() {
+            return (Packet) vpackets.get(0);
+        }
+
+        public synchronized Packet[] getPackets(int num) {
+            Packet[] result = new Packet[num];
+            for (int i = num - 1; i >= 0; i--) {
+                Packet p = null;
+                int j = vpackets.size() - num;
+                if (i + j > -1) {
+                    result[i] = (Packet) vpackets.get(i + j);
+                } else {
+                    result[i] = null;
+                }
+            }
+            return result;
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

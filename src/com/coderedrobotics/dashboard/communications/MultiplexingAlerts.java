@@ -40,7 +40,7 @@ public class MultiplexingAlerts {
         for (MultiplexingListener listener : listeners) {
             listener.routeAdded(route);
         }
-        if (alertConnectionObject) {
+        if (alertConnectionObject && connection != null) {
             connection.routeAdded(route);
         }
     }
@@ -49,7 +49,7 @@ public class MultiplexingAlerts {
         for (MultiplexingListener listener : listeners) {
             listener.routeRemoved(route);
         }
-        if (alertConnectionObject) {
+        if (alertConnectionObject && connection != null) {
             connection.routeRemoved(route);
         }
     }
@@ -58,7 +58,7 @@ public class MultiplexingAlerts {
         for (MultiplexingListener listener : listeners) {
             listener.multiplexingEnabled(route);
         }
-        if (alertConnectionObject) {
+        if (alertConnectionObject && connection != null) {
             connection.multiplexingEnabled(route);
         }
     }
@@ -67,7 +67,7 @@ public class MultiplexingAlerts {
         for (MultiplexingListener listener : listeners) {
             listener.multiplexingDisabled(route);
         }
-        if (alertConnectionObject) {
+        if (alertConnectionObject && connection != null) {
             connection.multiplexingDisabled(route);
         }
     }

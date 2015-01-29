@@ -5,7 +5,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 
 /**
@@ -140,7 +139,7 @@ public class PluginsInfo extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(load, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                    .addComponent(load, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(settings, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(back, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -161,12 +160,23 @@ public class PluginsInfo extends javax.swing.JPanel {
     private void listValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listValueChanged
         int ix = list.getSelectedIndex();
         Plugin plugin = plugins.get(ix);
+        
+        String name = plugin.pluginName() == null || "".equals(plugin.pluginName()) 
+                ? "Unnamed Plugin" : plugin.pluginName();
+        String author = plugin.pluginAuthor() == null || "".equals(plugin.pluginAuthor()) 
+                ? "Anonymous Author" : plugin.pluginAuthor();
+        String version = String.valueOf(plugin.pluginVersion());
+        String description = plugin.pluginDescription() == null || "".equals(plugin.pluginDescription()) 
+                ? "Author hasn't provided a plugin description." : plugin.pluginDescription();
+        String url = plugin.pluginURL() == null 
+                ? "Author hasn't provided a website URL." : plugin.pluginURL().toString();
+        
         String info = "<html><p><center>";
-        info += "<b>" + plugin.pluginName() + "</b>";
-        info += "<br>" + plugin.pluginAuthor();
-        info += "<br>v" + plugin.pluginVersion();
-        info += "<br><br>" + plugin.pluginDescription();
-        info += "<br><br><u>" + plugin.pluginURL().toString() + "</u>";
+        info += "<b>" + name + "</b>";
+        info += "<br>" + author;
+        info += "<br>v" + version;
+        info += "<br><br>" + description;
+        info += "<br><br><u>" + url + "</u>";
         info += "</center></p></html>";
         if (plugin.getSettingsGUI() != null) {
             settings.setEnabled(true);

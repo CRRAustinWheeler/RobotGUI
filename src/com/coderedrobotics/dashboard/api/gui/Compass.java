@@ -1,15 +1,24 @@
 package com.coderedrobotics.dashboard.api.gui;
 
+import com.coderedrobotics.dashboard.api.resources.RemoteDouble;
+import com.coderedrobotics.dashboard.api.resources.listeners.RemoteDoubleListener;
+import com.coderedrobotics.dashboard.communications.Connection;
+import com.coderedrobotics.dashboard.communications.Subsocket;
+import com.coderedrobotics.dashboard.communications.exceptions.InvalidRouteException;
+import com.coderedrobotics.dashboard.communications.exceptions.NotMultiplexedException;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Austin
  */
-public class Compass extends javax.swing.JPanel {
+public class Compass extends javax.swing.JPanel implements RemoteDoubleListener {
 
     private double angle = 0;
+    RemoteDouble value;
 
     /**
      * Creates new form Compass
@@ -50,7 +59,23 @@ public class Compass extends javax.swing.JPanel {
                 size / 2);
         g.drawString("angle: " + angle, 16, getHeight() - 4);
     }
-
+    
+    public void setup(String subsocketPath) {
+        try {
+            Subsocket root = Connection.getInstance().getRootSubsocket().enableMultiplexing();
+            root.createNewRoute(subsocketPath).enableMultiplexing();
+            value = new RemoteDouble(subsocketPath, RemoteDouble.MODE.LOCAL);
+            value.addListener(this);
+        } catch (InvalidRouteException | NotMultiplexedException ex) {
+            Logger.getLogger(StatusLabel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Override
+    public void update(double angle, RemoteDouble sender) {
+        setAngle(angle);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

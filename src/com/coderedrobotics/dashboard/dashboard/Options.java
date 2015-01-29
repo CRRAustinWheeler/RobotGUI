@@ -1,13 +1,14 @@
 package com.coderedrobotics.dashboard.dashboard;
 
 import com.coderedrobotics.dashboard.communications.Connection;
+import com.coderedrobotics.dashboard.communications.listeners.ConnectionListener;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author Michael
  */
-public class Options extends javax.swing.JPanel {
+public class Options extends javax.swing.JPanel implements ConnectionListener {
 
     OptionsContainer container;
     private boolean lastCompetitionMode = false;
@@ -18,6 +19,7 @@ public class Options extends javax.swing.JPanel {
      */
     public Options() {
         initComponents();
+        Connection.addConnectionListener(this);
     }
 
     void init(OptionsContainer container) {
@@ -44,6 +46,16 @@ public class Options extends javax.swing.JPanel {
     void setPluginsPath(String path) {
         dashboardPath.setText(path);
         lastPluginsPath = path;
+    }
+
+    @Override
+    public void connected() {
+        connectionLabel.setText("Connected to: " + Connection.getInstance().getAddress() + ":" + Connection.getInstance().getPort());
+    }
+
+    @Override
+    public void disconnected() {
+        connectionLabel.setText("NETWORK DISCONNECTED");
     }
 
     /**
@@ -75,6 +87,7 @@ public class Options extends javax.swing.JPanel {
         driverMode = new javax.swing.JCheckBox();
         jLabel11 = new javax.swing.JLabel();
         dashboardPath = new javax.swing.JTextField();
+        connectionLabel = new javax.swing.JLabel();
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/coderedrobotics/dashboard/coderedsmall.png"))); // NOI18N
@@ -124,6 +137,9 @@ public class Options extends javax.swing.JPanel {
 
         dashboardPath.setText("plugins");
 
+        connectionLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        connectionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -170,11 +186,13 @@ public class Options extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(manageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jSeparator2)))))
+                                .addComponent(jSeparator2))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(connectionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(manageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -220,7 +238,8 @@ public class Options extends javax.swing.JPanel {
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(manageButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(connectionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -263,6 +282,7 @@ public class Options extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applyButton;
+    private javax.swing.JLabel connectionLabel;
     private javax.swing.JTextField customPort;
     private javax.swing.JTextField dashboardPath;
     private javax.swing.JCheckBox driverMode;
@@ -283,5 +303,4 @@ public class Options extends javax.swing.JPanel {
     private javax.swing.JTextField robotIP;
     private javax.swing.JCheckBox snap;
     // End of variables declaration//GEN-END:variables
-
 }

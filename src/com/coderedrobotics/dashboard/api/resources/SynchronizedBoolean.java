@@ -1,18 +1,21 @@
 package com.coderedrobotics.dashboard.api.resources;
 
+import com.coderedrobotics.dashboard.api.resources.listeners.SynchronizedBooleanListener;
 import com.coderedrobotics.dashboard.communications.Connection;
 import com.coderedrobotics.dashboard.communications.PrimitiveSerializer;
 import com.coderedrobotics.dashboard.communications.Subsocket;
 import com.coderedrobotics.dashboard.communications.exceptions.InvalidRouteException;
 import com.coderedrobotics.dashboard.communications.exceptions.NotMultiplexedException;
+import com.coderedrobotics.dashboard.communications.listeners.ConnectionListener;
 import com.coderedrobotics.dashboard.communications.listeners.SubsocketListener;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
  *
  * @author Michael
  */
-public class SynchronizedBoolean implements SubsocketListener {
+public class SynchronizedBoolean implements SubsocketListener, ConnectionListener {
 
     private boolean val;
     private boolean highPriority;
@@ -27,6 +30,7 @@ public class SynchronizedBoolean implements SubsocketListener {
     private boolean sentVariable;
 
     Subsocket subsocket;
+    private ArrayList<SynchronizedBooleanListener> listeners = new ArrayList<>();
 
     @SuppressWarnings("LeakingThisInConstructor")
     public SynchronizedBoolean(String subsocketPath, boolean initialValue, boolean highPriority) throws InvalidRouteException {
@@ -38,7 +42,7 @@ public class SynchronizedBoolean implements SubsocketListener {
             // really not possible, but java wins again
         }
         subsocket.addListener(this);
-        subsocket.sendData(PrimitiveSerializer.toByteArray(highPriority));
+        Connection.addConnectionListener(this); // TODO: Remove?  
     }
 
     public SynchronizedBoolean(String subsocketPath, boolean initialValue) throws InvalidRouteException {
@@ -108,28 +112,28 @@ public class SynchronizedBoolean implements SubsocketListener {
                     boolean otherSideVal = PrimitiveSerializer.bytesToBoolean(data);
                     if (otherSideVal != val) {
                         if (!highPriority) {
-                            val = otherSideVal;
+                            updateValue(otherSideVal);
                         }
-                    }                    
+                    }
                     setupIV = true;
                     setup = true;
                 }
             } else {
                 if (echosWaitingFor == 0) {
-                    val = PrimitiveSerializer.bytesToBoolean(data);
+                    updateValue(PrimitiveSerializer.bytesToBoolean(data));
                     subsocket.sendData(data);
                 } else {
                     boolean response = PrimitiveSerializer.bytesToBoolean(data);
                     if (highPriority) {
                         if (sentVariable == response) {
-                            val = sentVariable;
+                            updateValue(sentVariable);
                             echosWaitingFor--;
                         }
                     } else {
                         if (response != sentVariable) {
                             subsocket.sendData(PrimitiveSerializer.toByteArray(response));
                         }
-                        val = response;
+                        updateValue(response);
                         echosWaitingFor--;
                     }
                 }
@@ -137,7 +141,38 @@ public class SynchronizedBoolean implements SubsocketListener {
         }
     }
 
+    private void updateValue(boolean value) {
+        val = value;
+        for (SynchronizedBooleanListener sbl : listeners) {
+            sbl.update(value, this);
+        }
+    }
+
+    public void addListener(SynchronizedBooleanListener sbl) {
+        listeners.remove(sbl);
+        listeners.add(sbl);
+    }
+    
+    public void removeListener(SynchronizedBooleanListener sbl) {
+        listeners.remove(sbl);
+    }
+
     public String getSubsocketPath() {
         return subsocket.mapCompleteRoute();
+    }
+
+    @Override
+    public void connected() {
+        subsocket.sendData(PrimitiveSerializer.toByteArray(highPriority));
+    }
+
+    @Override
+    public void disconnected() {
+        setup = false;
+        setupHP = false;
+        setupIV = false;
+        HPotherSIDEwins = false;
+        HPwereSAME = false;
+        echosWaitingFor = 0;
     }
 }

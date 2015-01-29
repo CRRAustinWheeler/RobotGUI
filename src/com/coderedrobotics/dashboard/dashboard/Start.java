@@ -31,9 +31,9 @@ public class Start {
      * Program main entry point, called by the JVM.
      *
      * @param args The command-line arguments (ignored)
-     * @throws Throwable if any error occurs
      */
     public static void main(String[] args) {
+        Debug.setDebugLevel(Debug.CRITICAL);
         Debug.println("[API] Launching Loading Screen...", Debug.STANDARD);
 
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

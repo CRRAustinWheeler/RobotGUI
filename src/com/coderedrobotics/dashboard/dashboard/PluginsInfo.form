@@ -49,7 +49,7 @@
           <Group type="102" attributes="0">
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="load" alignment="0" pref="35" max="32767" attributes="0"/>
+                  <Component id="load" alignment="0" min="-2" pref="35" max="-2" attributes="0"/>
                   <Component id="settings" min="-2" pref="34" max="-2" attributes="0"/>
                   <Component id="back" alignment="0" max="32767" attributes="0"/>
               </Group>

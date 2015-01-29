@@ -7,6 +7,7 @@ import com.coderedrobotics.dashboard.communications.exceptions.InvalidRouteExcep
 import com.coderedrobotics.dashboard.communications.exceptions.NotMultiplexedException;
 import com.coderedrobotics.dashboard.communications.exceptions.RootRouteException;
 import com.coderedrobotics.dashboard.communications.listeners.SubsocketListener;
+import com.coderedrobotics.dashboard.dashboard.Debug;
 
 /**
  * Subsocket Object for sending data.
@@ -27,7 +28,7 @@ public class Subsocket {
     private final ArrayList<Subsocket> subsockets;
     private final ArrayList<String> routes;
     private final Subsocket parent;
-    private final int ID;
+    private int ID;
 
     private final ArrayList<SubsocketListener> listeners;
 
@@ -39,14 +40,30 @@ public class Subsocket {
      * @param parent The parent Subsocket.
      */
     Subsocket(String nodeName, Subsocket parent) {
+        this(nodeName, parent, true, false);
+    }
+
+    Subsocket(String nodeName, Subsocket parent, boolean alert) {
+        this(nodeName, parent, alert, false);
+    }
+
+    Subsocket(String nodeName, Subsocket parent, boolean alert, boolean manBind) {
         subsockets = new ArrayList<>();
         routes = new ArrayList<>();
         listeners = new ArrayList<>();
         this.nodeName = nodeName;
         this.parent = parent;
-        ID = IDFactory.getID(mapRoute());
-        System.out.println("[NETWORK] NEW SUBSOCKET: Full Route: " + fullRoute
-                + "\tNode name: " + nodeName + "\tID: " + ID);
+        if (!manBind) {
+            BindingManager.handleNewSubsocket(this);
+        }
+        MultiplexingAlerts.alertRouteAdded(mapRoute(), alert);
+        Debug.println("[NETWORK] NEW SUBSOCKET: Full Route: " + fullRoute
+                + "\tNode name: " + nodeName + "\tID: " + ID, Debug.WARNING);
+    }
+
+    void setID(int ID) {
+        Debug.println("[NETWORK] SUBSOCKET ID UPDATE: Full Route: " + fullRoute + "\tNEW ID: " + ID, Debug.WARNING);
+        this.ID = ID;
     }
 
     /**
@@ -157,10 +174,9 @@ public class Subsocket {
             if (routes.contains(nodeName)) {
                 return subsockets.get(routes.indexOf(nodeName));
             }
-            Subsocket child = new Subsocket(nodeName, this);
+            Subsocket child = new Subsocket(nodeName, this, alert);
             subsockets.add(child);
             routes.add(nodeName);
-            MultiplexingAlerts.alertRouteAdded(child.mapRoute(), alert);
             return child;
         } else {
             throw new NotMultiplexedException();
@@ -208,7 +224,7 @@ public class Subsocket {
 
     private synchronized void deleteChild(String child, boolean alert) throws NotMultiplexedException {
         if (multiplexed) {
-            IDFactory.removeRoute(mapRoute() + "." + child);
+            BindingManager.removeRoute(mapRoute() + "." + child);
             subsockets.remove(routes.indexOf(child));
             routes.remove(child);
             MultiplexingAlerts.alertRouteRemoved(mapRoute() + "." + child, alert);
@@ -323,7 +339,12 @@ public class Subsocket {
      * @param bytes The data to be sent
      */
     public void sendData(byte[] bytes) {
-        switch (IDFactory.getBytesRequiredToTransmit()) {
+        if ("testsb".equals(nodeName)) {
+            for (byte b : bytes) {
+                Debug.println("SB WRITE: " + b, Debug.EXTENDED);
+            }
+        }
+        switch (BindingManager.getBytesRequiredToTransmit()) {
             case 1:
                 getParent().sendData((byte) ID);
                 break;
@@ -347,6 +368,11 @@ public class Subsocket {
     }
 
     void pushData(byte[] data) {
+        if ("testsb".equals(nodeName)) {
+            for (byte b : data) {
+                Debug.println("SB READ: " + b, Debug.EXTENDED);
+            }
+        }
         for (SubsocketListener listener : listeners) {
             listener.incomingData(data, this);
         }

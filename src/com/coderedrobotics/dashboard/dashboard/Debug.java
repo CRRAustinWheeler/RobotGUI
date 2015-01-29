@@ -1,13 +1,15 @@
 package com.coderedrobotics.dashboard.dashboard;
 
+import java.util.ArrayList;
+
 /**
  *
- * @author Michael Spoehr
+ * @author Michael
  */
 public class Debug {
 
     public static boolean debugMode = true;
-    private static int debugLevel = 3;
+    private static int debugLevel = 1;
     private static boolean errorsDisplayed;
     public static int CRITICAL = 1;
     public static int WARNING = 2;
@@ -15,8 +17,9 @@ public class Debug {
     public static int EXTENDED = 4;
     public static int EVERYTHING = 5;
     public static int DISABLEPRINT = 6;
-    // Note: if debug level for incomming print is set to 0, it will override
-    // the debug level, even if it is set to 6.
+
+    private static ArrayList<String> allowedChannels = new ArrayList<>();
+    private static ArrayList<Integer> channelLevels = new ArrayList<>();
 
     public static void setDebugLevel(int level) {
         debugLevel = level;
@@ -36,6 +39,20 @@ public class Debug {
 
     public static void disableDebugPrinting() {
         debugLevel = 6;
+    }
+
+    public static void addChannel(String name, int level) {
+        if (!allowedChannels.contains(name)) {
+            allowedChannels.add(name);
+            channelLevels.add(level);
+        }
+    }
+
+    public static void removeChannel(String name) {
+        if (allowedChannels.contains(name)) {
+            channelLevels.remove(allowedChannels.indexOf(name));
+            allowedChannels.remove(name);
+        }
     }
 
     public static void print(Object object, int level) {
@@ -69,6 +86,12 @@ public class Debug {
             System.out.println(object);
         } else if (level == 0) {
             System.out.println(object);
+        }
+    }
+
+    public static void println(Object object, String channel) {
+        if (allowedChannels.contains(channel)) {
+            println(object, channelLevels.get(allowedChannels.indexOf(channel)));
         }
     }
 

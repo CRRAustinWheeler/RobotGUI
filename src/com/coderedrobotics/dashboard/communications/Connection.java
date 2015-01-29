@@ -1,18 +1,11 @@
 package com.coderedrobotics.dashboard.communications;
 
 import com.coderedrobotics.dashboard.communications.exceptions.ConnectionResetException;
-import com.coderedrobotics.dashboard.communications.exceptions.InvalidRouteException;
-import com.coderedrobotics.dashboard.communications.exceptions.NotMultiplexedException;
-import com.coderedrobotics.dashboard.communications.exceptions.RootRouteException;
 import com.coderedrobotics.dashboard.communications.exceptions.RouteException;
 import com.coderedrobotics.dashboard.communications.listeners.ConnectionListener;
-import com.coderedrobotics.dashboard.communications.listeners.MultiplexingListener;
-import com.coderedrobotics.dashboard.communications.listeners.SubsocketListener;
-import com.coderedrobotics.dashboard.dashboard.Start;
+import com.coderedrobotics.dashboard.dashboard.Debug;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -27,18 +20,17 @@ import java.util.logging.Logger;
  */
 public class Connection {
 
-    private ServerSocket serverSocket;
     private Socket tcpConnection;
     private BufferedInputStream input;
     private NonblockingOutputBuffer output;
 
     private final ControlSubsocket controlSocket;
     private final RootSubsocket rootSocket;
-    private final IDFactory idFactory;
 
     private static Connection connection = null;
-    private final PrivateStuff privateStuff;
+    private final ConnectionThread privateStuff;
     private Thread thread;
+    private final MultiplexingManager multiplexingManager;
 
     private static String ADDRESS = "localhost";
     private static int PORT = 1180;
@@ -48,14 +40,30 @@ public class Connection {
     private static boolean connected;
 
     private Connection() {
-        idFactory = new IDFactory(this);
         rootSocket = new RootSubsocket("root", this);
         controlSocket = new ControlSubsocket("control", this);
-        privateStuff = new PrivateStuff();
-        setupListeners();
+        privateStuff = new ConnectionThread();
+        multiplexingManager = new MultiplexingManager(controlSocket, rootSocket);
+        controlSocket.addListener(multiplexingManager);
         start();
     }
 
+    /**
+     * Returns the currently set address for the server
+     * @return server's IP address
+     */
+    public String getAddress() {
+        return ADDRESS;
+    }
+    
+    /**
+     * Returns the currently set port for the server
+     * @return port
+     */
+    public int getPort() {
+        return PORT;
+    }
+    
     /**
      * Set the connection information.
      *
@@ -74,11 +82,6 @@ public class Connection {
      */
     public void setAddress(String address) {
         ADDRESS = address;
-    }
-
-    private void setupListeners() {
-        MultiplexingAlerts.addConnection(privateStuff);
-        controlSocket.addListener(privateStuff);
     }
 
     private void start() {
@@ -126,7 +129,7 @@ public class Connection {
 
     private synchronized static void alertConnected() {
         connected = true;
-        System.out.println("[NETWORK] Connected");
+        Debug.println("[NETWORK] Connected", Debug.EXTENDED);
         for (ConnectionListener listener : connectionListeners) {
             listener.connected();
         }
@@ -137,7 +140,17 @@ public class Connection {
         for (ConnectionListener listener : connectionListeners) {
             listener.disconnected();
         }
-        System.out.println("[NETWORK] Disconnected");
+        Debug.println("[NETWORK] Disconnected", Debug.EXTENDED);
+    }
+
+    /**
+     * Returns a value stating whether the dashboard is connected to a remote,
+     * to the best of the client's knowledge.
+     *
+     * @return connected
+     */
+    public boolean isConnected() {
+        return connected;
     }
 
     /**
@@ -153,6 +166,8 @@ public class Connection {
     @SuppressWarnings("SleepWhileInLoop")
     private void reconnect() {
         alertDisconnected();
+
+        multiplexingManager.mode = MultiplexingManager.Mode.SYNC;
 
         boolean retry = true;
         while (retry) {
@@ -178,10 +193,10 @@ public class Connection {
                 }
                 try {
                     tcpConnection = new Socket(ADDRESS, PORT);
-                    System.out.println("[NETWORK] TCP Connection accepted from " + tcpConnection.getInetAddress() + ":" + tcpConnection.getPort());
+                    Debug.println("[NETWORK] TCP Connection accepted from " + tcpConnection.getInetAddress() + ":" + tcpConnection.getPort(), Debug.EXTENDED);
                 } catch (IOException ex) {
                     tcpConnection = null;
-                    System.out.println("[NETWORK] Failed to connect to server at " + ADDRESS + ":" + PORT);
+                    Debug.println("[NETWORK] Failed to connect to server at " + ADDRESS + ":" + PORT, Debug.EXTENDED);
                 }
             }
             //setup the reader and writer objects
@@ -195,6 +210,7 @@ public class Connection {
 
         // DON'T ALLOW ANY OTHER TRAFFIC UNTIL WE KNOW ABOUT THE CURRENT TREE STRUCTURE:
         boolean run = true;
+        boolean serverDone = false;
         while (run) {
             try {
                 Thread.sleep(10);
@@ -214,17 +230,24 @@ public class Connection {
                     }
 
                     try {
-                        String route = IDFactory.getRoute(id);
+                        String route = BindingManager.getRoute(id);
                         if ("control".equals(route)) {
                             if (data[0] == 0) {
-                                byte[] b = new byte[1];
-                                b[0] = 0;
-                                controlSocket.sendData(b);
-                                run = false;
-                                break;
+                                if (serverDone) {
+                                    run = false;
+                                    break;
+                                } else {
+                                    BindingManager.bindQueued();
+                                    controlSocket.allowWriting();
+                                    multiplexingManager.sendMultiplexingActions();
+                                    controlSocket.sendConfirmPacket();
+                                    serverDone = true;
+                                }
                             } else {
                                 controlSocket.pushData(data);
                             }
+                        } else {
+                            System.out.println("WE GOT SOMETHING ELSE: " + route);
                         }
                     } catch (RouteException ex) {
                         Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
@@ -236,17 +259,18 @@ public class Connection {
                 reconnect();
             }
         }
-        
-        System.out.println("BEGINNING ALERTS");
+
+        multiplexingManager.mode = MultiplexingManager.Mode.RUN;
+        BindingManager.printBindings();
+        Debug.println("BEGINNING ALERTS", Debug.EXTENDED);
 
         alertConnected();
     }
 
     public void disconnect() {
-        byte[] routeBytes = PrimitiveSerializer.toByteArray("r"); // doesn't matter, but required
-        byte[] data = new byte[routeBytes.length + 1];
-        data[0] = 5; // Bye Code
-        System.arraycopy(routeBytes, 0, data, 1, routeBytes.length);
+        alertDisconnected();
+        connected = false;
+        byte[] data = {5}; // 5 = bye
         controlSocket.sendData(data);
     }
 
@@ -263,13 +287,12 @@ public class Connection {
     }
 
     void writeByte(byte b) {
-//        try {
+        try {
             output.writeByte(b);
-            System.out.println("WRITE: " + b);
-//        } catch (IOException ex) {
-//            reconnect();
-//            throw new ConnectionResetException();
-//        }
+//            System.out.println("WRITE: " + b);
+        } catch (NullPointerException ex) {
+
+        }
     }
 
     void writeBytes(byte[] toByteArray) {
@@ -290,7 +313,7 @@ public class Connection {
     }
 
     private int readSubsocketID() {
-        switch (IDFactory.getBytesRequiredToTransmit()) {
+        switch (BindingManager.getBytesRequiredToTransmit()) {
             case 1:
                 return (int) readByte();
             case 2:
@@ -307,7 +330,7 @@ public class Connection {
      * This stuff should <b>never</b> be called outside of the Connection object
      * or the communications package.
      */
-    private class PrivateStuff implements Runnable, MultiplexingListener, SubsocketListener {
+    private class ConnectionThread implements Runnable {
 
         @Override
         @SuppressWarnings("SleepWhileInLoop")
@@ -330,7 +353,7 @@ public class Connection {
                             data[j] = readByte();
                         }
                         try {
-                            String route = IDFactory.getRoute(id);
+                            String route = BindingManager.getRoute(id);
                             if ("control".equals(route)) {
                                 controlSocket.pushData(data);
                             } else {
@@ -345,67 +368,6 @@ public class Connection {
                     Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                     reconnect();
                 }
-            }
-        }
-
-        @Override
-        public void multiplexingEnabled(String route) {
-            byte[] routeBytes = PrimitiveSerializer.toByteArray(route);
-            byte[] data = new byte[routeBytes.length + 1];
-            data[0] = 3; //Multiplex Enabled Code
-            System.arraycopy(routeBytes, 0, data, 1, routeBytes.length);
-            controlSocket.sendData(data);
-        }
-
-        @Override
-        public void multiplexingDisabled(String route) {
-            byte[] routeBytes = PrimitiveSerializer.toByteArray(route);
-            byte[] data = new byte[routeBytes.length + 1];
-            data[0] = 4; //Multiplex Disabled Code
-            System.arraycopy(routeBytes, 0, data, 1, routeBytes.length);
-            controlSocket.sendData(data);
-        }
-
-        @Override
-        public void routeAdded(String route) {
-            byte[] routeBytes = PrimitiveSerializer.toByteArray(route);
-            byte[] data = new byte[routeBytes.length + 1];
-            data[0] = 1; // New Route Code
-            System.arraycopy(routeBytes, 0, data, 1, routeBytes.length);
-            controlSocket.sendData(data);
-        }
-
-        @Override
-        public void routeRemoved(String route) {
-            byte[] routeBytes = PrimitiveSerializer.toByteArray(route);
-            byte[] data = new byte[routeBytes.length + 1];
-            data[0] = 2; // Route Removed Code
-            System.arraycopy(routeBytes, 0, data, 1, routeBytes.length);
-            controlSocket.sendData(data);
-        }
-
-        @Override
-        public void incomingData(byte[] data, Subsocket subsocket) {
-            try {
-                byte[] routeBytes = new byte[data.length - 1];
-                System.arraycopy(data, 1, routeBytes, 0, data.length - 1);
-                String route = PrimitiveSerializer.bytesToString(routeBytes);
-                switch (data[0]) {
-                    case 1:
-                        rootSocket.createNewRoute(route, false);
-                        break;
-                    case 2:
-                        rootSocket.destroyRoute(route, false);
-                        break;
-                    case 3:
-                        rootSocket.getSubsocket(route).enableMultiplexing(false);
-                        break;
-                    case 4:
-                        rootSocket.getSubsocket(route).disableMultiplexing(false);
-                        break;
-                }
-            } catch (NotMultiplexedException | InvalidRouteException | RootRouteException ex) {
-                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

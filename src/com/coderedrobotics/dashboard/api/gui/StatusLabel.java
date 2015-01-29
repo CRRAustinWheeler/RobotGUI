@@ -1,80 +1,49 @@
 package com.coderedrobotics.dashboard.api.gui;
 
-import com.coderedrobotics.dashboard.api.resources.RemoteBoolean;
 import com.coderedrobotics.dashboard.api.resources.RemoteString;
-import com.coderedrobotics.dashboard.api.resources.listeners.RemoteBooleanListener;
 import com.coderedrobotics.dashboard.api.resources.listeners.RemoteStringListener;
 import com.coderedrobotics.dashboard.communications.Connection;
 import com.coderedrobotics.dashboard.communications.Subsocket;
 import com.coderedrobotics.dashboard.communications.exceptions.InvalidRouteException;
 import com.coderedrobotics.dashboard.communications.exceptions.NotMultiplexedException;
-import java.awt.Color;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
- * @author Austin
+ * @author Michael
  */
-public class Indicator extends javax.swing.JPanel implements RemoteBooleanListener, RemoteStringListener {
+public class StatusLabel extends javax.swing.JPanel implements RemoteStringListener {
 
-    private RemoteBoolean value;
-    private RemoteString text;
-    private Color on = Color.GREEN;
-    private Color off = Color.RED;
-
+    RemoteString value;
+    
     /**
-     * Creates new form Indicator
+     * Creates new form StatusLabel
      */
-    public Indicator() {
+    public StatusLabel() {
         initComponents();
     }
-
+    
     public void setup(String subsocketPath) {
         try {
             Subsocket root = Connection.getInstance().getRootSubsocket().enableMultiplexing();
             root.createNewRoute(subsocketPath).enableMultiplexing();
-            value = new RemoteBoolean(subsocketPath + ".boolean", RemoteBoolean.MODE.LOCAL);
-            text = new RemoteString(subsocketPath + ".string", RemoteString.MODE.LOCAL);
+            value = new RemoteString(subsocketPath, RemoteString.MODE.LOCAL);
             value.addListener(this);
-            text.addListener(this);
-        } catch (NotMultiplexedException | InvalidRouteException e) {
-            e.printStackTrace();
+        } catch (InvalidRouteException | NotMultiplexedException ex) {
+            Logger.getLogger(StatusLabel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void setText(String string) {
-        jLabel1.setText(string);
+    private void setText(String text) {
+        jLabel1.setText(text);
     }
-
-    public void setColor(Color color) {
-        setBackground(color);
-    }
-
-    public void setState(boolean b) {
-        if (b) {
-            setColor(on);
-        } else {
-            setColor(off);
-        }
-    }
-
-    public void setOnColor(Color on) {
-        this.on = on;
-    }
-
-    public void setOffColor(Color off) {
-        this.off = off;
-    }
-
+    
     @Override
-    public void update(boolean value, RemoteBoolean sender) {
-        setState(value);
+    public void update(String string, RemoteString sender) {
+        setText(string);
     }
-
-    @Override
-    public void update(String value, RemoteString sender) {
-        setText(value);
-    }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -86,21 +55,19 @@ public class Indicator extends javax.swing.JPanel implements RemoteBooleanListen
 
         jLabel1 = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(255, 0, 0));
-
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 14, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables

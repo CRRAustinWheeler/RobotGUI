@@ -36,7 +36,7 @@ public class RootSubsocket extends Subsocket {
 
     @Override
     public void sendData(byte[] bytes) {
-        switch (IDFactory.getBytesRequiredToTransmit()) {
+        switch (BindingManager.getBytesRequiredToTransmit()) {
             case 1:
                 sendData((byte) getID());
                 break;

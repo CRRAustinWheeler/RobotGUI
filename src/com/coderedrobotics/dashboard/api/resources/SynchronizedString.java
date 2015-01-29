@@ -1,18 +1,21 @@
 package com.coderedrobotics.dashboard.api.resources;
 
+import com.coderedrobotics.dashboard.api.resources.listeners.SynchronizedStringListener;
 import com.coderedrobotics.dashboard.communications.Connection;
 import com.coderedrobotics.dashboard.communications.PrimitiveSerializer;
 import com.coderedrobotics.dashboard.communications.Subsocket;
 import com.coderedrobotics.dashboard.communications.exceptions.InvalidRouteException;
 import com.coderedrobotics.dashboard.communications.exceptions.NotMultiplexedException;
+import com.coderedrobotics.dashboard.communications.listeners.ConnectionListener;
 import com.coderedrobotics.dashboard.communications.listeners.SubsocketListener;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
  *
  * @author Michael
  */
-public class SynchronizedString implements SubsocketListener {
+public class SynchronizedString implements SubsocketListener, ConnectionListener {
 
     private String val;
     private boolean highPriority;
@@ -27,6 +30,7 @@ public class SynchronizedString implements SubsocketListener {
     private String sentVariable;
 
     Subsocket subsocket;
+    private ArrayList<SynchronizedStringListener> listeners = new ArrayList<>();
 
     @SuppressWarnings("LeakingThisInConstructor")
     public SynchronizedString(String subsocketPath, String initialValue, boolean highPriority) throws InvalidRouteException {
@@ -38,7 +42,7 @@ public class SynchronizedString implements SubsocketListener {
             // really not possible, but java wins again
         }
         subsocket.addListener(this);
-        subsocket.sendData(PrimitiveSerializer.toByteArray(highPriority));
+        Connection.addConnectionListener(this);
     }
 
     public SynchronizedString(String subsocketPath, String initialValue) throws InvalidRouteException {
@@ -104,7 +108,7 @@ public class SynchronizedString implements SubsocketListener {
                     String otherSideVal = PrimitiveSerializer.bytesToString(data);
                     if (!otherSideVal.equals(val)) {
                         if (!highPriority) {
-                            val = otherSideVal;
+                            updateValue(otherSideVal);
                         }
                     }                    
                     setupIV = true;
@@ -112,20 +116,20 @@ public class SynchronizedString implements SubsocketListener {
                 }
             } else {
                 if (echosWaitingFor == 0) {
-                    val = PrimitiveSerializer.bytesToString(data);
+                    updateValue(PrimitiveSerializer.bytesToString(data));
                     subsocket.sendData(data);
                 } else {
                     String response = PrimitiveSerializer.bytesToString(data);
                     if (highPriority) {
                         if (sentVariable.equals(response)) {
-                            val = sentVariable;
+                            updateValue(sentVariable);
                             echosWaitingFor--;
                         }
                     } else {
                         if (!response.equals(sentVariable)) {
                             subsocket.sendData(PrimitiveSerializer.toByteArray(response));
                         }
-                        val = response;
+                        updateValue(response);
                         echosWaitingFor--;
                     }
                 }
@@ -133,7 +137,38 @@ public class SynchronizedString implements SubsocketListener {
         }
     }
 
+     private void updateValue(String value) {
+        val = value;
+        for (SynchronizedStringListener ssl : listeners) { // not the buggy kind :)
+            ssl.update(value, this);
+        }
+    }
+
+    public void addListener(SynchronizedStringListener ssl) {
+        listeners.remove(ssl);
+        listeners.add(ssl);
+    }
+    
+    public void removeListener(SynchronizedStringListener ssl) {
+        listeners.remove(ssl);
+    }
+    
     public String getSubsocketPath() {
         return subsocket.mapCompleteRoute();
+    }
+    
+    @Override
+    public void connected() {
+        subsocket.sendData(PrimitiveSerializer.toByteArray(highPriority));
+    }
+
+    @Override
+    public void disconnected() {
+        setup = false;
+        setupHP = false;
+        setupIV = false;
+        HPotherSIDEwins = false;
+        HPwereSAME = false;
+        echosWaitingFor = 0;
     }
 }
