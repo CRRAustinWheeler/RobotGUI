@@ -28,7 +28,7 @@ public class Subsocket {
     private final ArrayList<Subsocket> subsockets;
     private final ArrayList<String> routes;
     private final Subsocket parent;
-    private int ID;
+//    private int ID;
 
     private final ArrayList<SubsocketListener> listeners;
 
@@ -53,18 +53,18 @@ public class Subsocket {
         listeners = new ArrayList<>();
         this.nodeName = nodeName;
         this.parent = parent;
-        if (!manBind) {
-            BindingManager.handleNewSubsocket(this);
-        }
+//        if (!manBind) {
+//            BindingManager.handleNewSubsocket(this);
+//        }
         MultiplexingAlerts.alertRouteAdded(mapRoute(), alert);
         Debug.println("[NETWORK] NEW SUBSOCKET: Full Route: " + fullRoute
-                + "\tNode name: " + nodeName + "\tID: " + ID, Debug.WARNING);
+                + "\tNode name: " + nodeName + "\tID: " + "NO ID", Debug.WARNING);
     }
 
-    void setID(int ID) {
-        Debug.println("[NETWORK] SUBSOCKET ID UPDATE: Full Route: " + fullRoute + "\tNEW ID: " + ID, Debug.WARNING);
-        this.ID = ID;
-    }
+//    void setID(int ID) {
+//        Debug.println("[NETWORK] SUBSOCKET ID UPDATE: Full Route: " + fullRoute + "\tNEW ID: " + ID, Debug.WARNING);
+//        this.ID = ID;
+//    }
 
     /**
      * Enable multiplexing features on any Subsocket.
@@ -224,7 +224,7 @@ public class Subsocket {
 
     private synchronized void deleteChild(String child, boolean alert) throws NotMultiplexedException {
         if (multiplexed) {
-            BindingManager.removeRoute(mapRoute() + "." + child);
+//            BindingManager.removeRoute(mapRoute() + "." + child);
             subsockets.remove(routes.indexOf(child));
             routes.remove(child);
             MultiplexingAlerts.alertRouteRemoved(mapRoute() + "." + child, alert);
@@ -325,9 +325,9 @@ public class Subsocket {
      *
      * @return The ID of the Subsocket, ranging from -2147483648 to 2147483647.
      */
-    public int getID() {
-        return ID;
-    }
+//    public int getID() {
+//        return ID;
+//    }
 
     void sendData(byte b) {
         getParent().sendData(b);
@@ -339,40 +339,37 @@ public class Subsocket {
      * @param bytes The data to be sent
      */
     public void sendData(byte[] bytes) {
-        if ("testsb".equals(nodeName)) {
-            for (byte b : bytes) {
-                Debug.println("SB WRITE: " + b, Debug.EXTENDED);
-            }
+//        switch (BindingManager.getBytesRequiredToTransmit()) {
+//            case 1:
+//                getParent().sendData((byte) ID);
+//                break;
+//            case 2:
+//                for (byte b : PrimitiveSerializer.toByteArray((short) ID)) {
+//                    getParent().sendData(b);
+//                }
+//                break;
+//            case 4:
+//                for (byte b : PrimitiveSerializer.toByteArray(ID)) {
+//                    getParent().sendData(b);
+//                }
+//                break;
+//        }
+        byte[] route = PrimitiveSerializer.toByteArray(mapCompleteRoute());
+        for (byte b : PrimitiveSerializer.toByteArray((char) route.length)) {
+            sendData(b);
         }
-        switch (BindingManager.getBytesRequiredToTransmit()) {
-            case 1:
-                getParent().sendData((byte) ID);
-                break;
-            case 2:
-                for (byte b : PrimitiveSerializer.toByteArray((short) ID)) {
-                    getParent().sendData(b);
-                }
-                break;
-            case 4:
-                for (byte b : PrimitiveSerializer.toByteArray(ID)) {
-                    getParent().sendData(b);
-                }
-                break;
+        for (byte b : route) {
+            sendData(b);
         }
         for (byte b : PrimitiveSerializer.toByteArray((char) bytes.length)) {
-            getParent().sendData(b);
+            sendData(b);
         }
         for (byte b : bytes) {
-            getParent().sendData(b);
+            sendData(b);
         }
     }
 
     void pushData(byte[] data) {
-        if ("testsb".equals(nodeName)) {
-            for (byte b : data) {
-                Debug.println("SB READ: " + b, Debug.EXTENDED);
-            }
-        }
         for (SubsocketListener listener : listeners) {
             listener.incomingData(data, this);
         }

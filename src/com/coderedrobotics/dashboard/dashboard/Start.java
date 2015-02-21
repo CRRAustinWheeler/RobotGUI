@@ -33,7 +33,7 @@ public class Start {
      * @param args The command-line arguments (ignored)
      */
     public static void main(String[] args) {
-        Debug.setDebugLevel(Debug.CRITICAL);
+        Debug.setDebugLevel(Debug.EVERYTHING);
         Debug.println("[API] Launching Loading Screen...", Debug.STANDARD);
 
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -184,8 +184,17 @@ public class Start {
                         Debug.println("[API] Loaded plugin: " + plugin.pluginName()
                                 + " with no GUI tabs.", Debug.STANDARD);
                     }
-                } catch (MalformedURLException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+                } catch (MalformedURLException | ClassNotFoundException | 
+                        InstantiationException | IllegalAccessException ex) {
                     System.err.println(ex);
+                    JOptionPane.showMessageDialog(gui, "Couldn't load " + file 
+                            + ".\nThis is usually caused by an issue with plugin.Init.\n", 
+                            "Load Error", JOptionPane.ERROR_MESSAGE);
+                } catch (UnsupportedClassVersionError ex) {
+                    System.err.println(ex);
+                    JOptionPane.showMessageDialog(gui, "Couldn't load " + file 
+                            + " because it was compiled in an unknown java version (Java 8?)", 
+                            "Load Error", JOptionPane.ERROR_MESSAGE);
                 }
                 completedPlugins++;
                 loading.setProgress(20 + (int) (80 * completedPlugins / files.length));

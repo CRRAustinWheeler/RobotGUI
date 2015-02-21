@@ -44,26 +44,29 @@ public class Connection {
         controlSocket = new ControlSubsocket("control", this);
         privateStuff = new ConnectionThread();
         multiplexingManager = new MultiplexingManager(controlSocket, rootSocket);
+        multiplexingManager.mode = MultiplexingManager.Mode.RUN;
         controlSocket.addListener(multiplexingManager);
         start();
     }
 
     /**
      * Returns the currently set address for the server
+     *
      * @return server's IP address
      */
     public String getAddress() {
         return ADDRESS;
     }
-    
+
     /**
      * Returns the currently set port for the server
+     *
      * @return port
      */
     public int getPort() {
         return PORT;
     }
-    
+
     /**
      * Set the connection information.
      *
@@ -167,7 +170,7 @@ public class Connection {
     private void reconnect() {
         alertDisconnected();
 
-        multiplexingManager.mode = MultiplexingManager.Mode.SYNC;
+//        multiplexingManager.mode = MultiplexingManager.Mode.SYNC;
 
         boolean retry = true;
         while (retry) {
@@ -209,59 +212,59 @@ public class Connection {
         }
 
         // DON'T ALLOW ANY OTHER TRAFFIC UNTIL WE KNOW ABOUT THE CURRENT TREE STRUCTURE:
-        boolean run = true;
-        boolean serverDone = false;
-        while (run) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException ex) {
-            }
+//        boolean run = true;
+//        boolean serverDone = false;
+//        while (run) {
+//            try {
+//                Thread.sleep(10);
+//            } catch (InterruptedException ex) {
+//            }
+//
+//            flush();
+//
+//            try {
+//                while (input.available() > 0 || tcpConnection.getInputStream().available() > 0) {
+//                    int id = readSubsocketID();
+//                    byte[] length = {readByte(), readByte()};
+//                    int l = (int) (PrimitiveSerializer.bytesToChar(length));
+//                    byte[] data = new byte[(int) (PrimitiveSerializer.bytesToChar(length))];
+//                    for (int j = 0; j < data.length; j++) {
+//                        data[j] = readByte();
+//                    }
+//
+//                    try {
+//                        String route = BindingManager.getRoute(id);
+//                        if ("control".equals(route)) {
+//                            if (data[0] == 0) {
+//                                if (serverDone) {
+//                                    run = false;
+//                                    break;
+//                                } else {
+//                                    BindingManager.bindQueued();
+        controlSocket.allowWriting();
+        multiplexingManager.sendMultiplexingActions();
+//                                    controlSocket.sendConfirmPacket();
+//                                    serverDone = true;
+//                                }
+//                            } else {
+//                                controlSocket.pushData(data);
+//                            }
+//                        } else {
+//                            System.out.println("WE GOT SOMETHING ELSE: " + route);
+//                        }
+//                    } catch (RouteException ex) {
+//                        Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                }
+//            } catch (ConnectionResetException ex) {
+//            } catch (IOException ex) {
+//                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+//                reconnect();
+//            }
+//        }
 
-            flush();
-
-            try {
-                while (input.available() > 0 || tcpConnection.getInputStream().available() > 0) {
-                    int id = readSubsocketID();
-                    byte[] length = {readByte(), readByte()};
-                    int l = (int) (PrimitiveSerializer.bytesToChar(length));
-                    byte[] data = new byte[(int) (PrimitiveSerializer.bytesToChar(length))];
-                    for (int j = 0; j < data.length; j++) {
-                        data[j] = readByte();
-                    }
-
-                    try {
-                        String route = BindingManager.getRoute(id);
-                        if ("control".equals(route)) {
-                            if (data[0] == 0) {
-                                if (serverDone) {
-                                    run = false;
-                                    break;
-                                } else {
-                                    BindingManager.bindQueued();
-                                    controlSocket.allowWriting();
-                                    multiplexingManager.sendMultiplexingActions();
-                                    controlSocket.sendConfirmPacket();
-                                    serverDone = true;
-                                }
-                            } else {
-                                controlSocket.pushData(data);
-                            }
-                        } else {
-                            System.out.println("WE GOT SOMETHING ELSE: " + route);
-                        }
-                    } catch (RouteException ex) {
-                        Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            } catch (ConnectionResetException ex) {
-            } catch (IOException ex) {
-                Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                reconnect();
-            }
-        }
-
-        multiplexingManager.mode = MultiplexingManager.Mode.RUN;
-        BindingManager.printBindings();
+//        multiplexingManager.mode = MultiplexingManager.Mode.RUN;
+//        BindingManager.printBindings();
         Debug.println("BEGINNING ALERTS", Debug.EXTENDED);
 
         alertConnected();
@@ -312,20 +315,19 @@ public class Connection {
         }
     }
 
-    private int readSubsocketID() {
-        switch (BindingManager.getBytesRequiredToTransmit()) {
-            case 1:
-                return (int) readByte();
-            case 2:
-                byte[] data = {readByte(), readByte()};
-                return (int) (PrimitiveSerializer.bytesToShort(data));
-            case 4:
-                byte[] bytes = {readByte(), readByte(), readByte(), readByte()};
-                return PrimitiveSerializer.bytesToInt(bytes);
-        }
-        return 0;
-    }
-
+//    private int readSubsocketID() {
+//        switch (BindingManager.getBytesRequiredToTransmit()) {
+//            case 1:
+//                return (int) readByte();
+//            case 2:
+//                byte[] data = {readByte(), readByte()};
+//                return (int) (PrimitiveSerializer.bytesToShort(data));
+//            case 4:
+//                byte[] bytes = {readByte(), readByte(), readByte(), readByte()};
+//                return PrimitiveSerializer.bytesToInt(bytes);
+//        }
+//        return 0;
+//    }
     /**
      * This stuff should <b>never</b> be called outside of the Connection object
      * or the communications package.
@@ -345,7 +347,12 @@ public class Connection {
 
                 try {
                     while (input.available() > 0 || tcpConnection.getInputStream().available() > 0) {
-                        int id = readSubsocketID();
+//                        int id = readSubsocketID();
+                        byte[] routelength = {readByte(), readByte()};
+                        byte[] routedata = new byte[(int) PrimitiveSerializer.bytesToChar(routelength)];
+                        for (int k = 0; k < routedata.length; k++) {
+                            routedata[k] = readByte();
+                        }
                         byte[] length = {readByte(), readByte()};
                         int l = (int) (PrimitiveSerializer.bytesToChar(length));
                         byte[] data = new byte[(int) (PrimitiveSerializer.bytesToChar(length))];
@@ -353,7 +360,8 @@ public class Connection {
                             data[j] = readByte();
                         }
                         try {
-                            String route = BindingManager.getRoute(id);
+//                            String route = BindingManager.getRoute(id);
+                            String route = PrimitiveSerializer.bytesToString(routedata);
                             if ("control".equals(route)) {
                                 controlSocket.pushData(data);
                             } else {

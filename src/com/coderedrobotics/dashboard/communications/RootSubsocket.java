@@ -36,20 +36,27 @@ public class RootSubsocket extends Subsocket {
 
     @Override
     public void sendData(byte[] bytes) {
-        switch (BindingManager.getBytesRequiredToTransmit()) {
-            case 1:
-                sendData((byte) getID());
-                break;
-            case 2:
-                for (byte b : PrimitiveSerializer.toByteArray((short) getID())) {
-                    sendData(b);
-                }
-                break;
-            case 4:
-                for (byte b : PrimitiveSerializer.toByteArray(getID())) {
-                    sendData(b);
-                }
-                break;
+//        switch (BindingManager.getBytesRequiredToTransmit()) {
+//            case 1:
+//                sendData((byte) getID());
+//                break;
+//            case 2:
+//                for (byte b : PrimitiveSerializer.toByteArray((short) getID())) {
+//                    sendData(b);
+//                }
+//                break;
+//            case 4:
+//                for (byte b : PrimitiveSerializer.toByteArray(getID())) {
+//                    sendData(b);
+//                }
+//                break;
+//        }
+        byte[] route = PrimitiveSerializer.toByteArray(mapCompleteRoute());
+        for (byte b : PrimitiveSerializer.toByteArray((char) route.length)) {
+            sendData(b);
+        }
+        for (byte b : route) {
+            sendData(b);
         }
         for (byte b : PrimitiveSerializer.toByteArray((char) bytes.length)) {
             sendData(b);

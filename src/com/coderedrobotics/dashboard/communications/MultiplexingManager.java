@@ -95,7 +95,7 @@ class MultiplexingManager implements SubsocketListener, MultiplexingListener {
                     root.getSubsocket(action.getRoute()).disableMultiplexing(false);
                     break;
                 case ROUTE_ADD:
-                    BindingManager.manualBind(action.getRoute(), action.getPort());
+//                    BindingManager.manualBind(action.getRoute(), action.getPort());
                     root.createNewRoute(action.getRoute(), false);
                     break;
                 case ROUTE_REMOVE:
@@ -103,9 +103,10 @@ class MultiplexingManager implements SubsocketListener, MultiplexingListener {
             }
         } catch (InvalidRouteException | NotMultiplexedException | RootRouteException ex) {
             Logger.getLogger(MultiplexingManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RouteException ex) {
-
-        }
+        } 
+//        catch (RouteException ex) {
+//
+//        }
     }
 
     private void update(byte[] data) {

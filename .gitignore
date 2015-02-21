@@ -1,6 +1,6 @@
-New Plugins/
 nbproject/
 build/
-dashboard
 manifest.mf
 build.xml
+dist/README.TXT
+TestPlugins/

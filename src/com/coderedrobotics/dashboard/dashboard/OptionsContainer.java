@@ -57,7 +57,10 @@ public class OptionsContainer extends javax.swing.JPanel {
         optionsPanel = new com.coderedrobotics.dashboard.dashboard.Options();
         pluginInfoPanel = new com.coderedrobotics.dashboard.dashboard.PluginsInfo();
 
+        setMinimumSize(new java.awt.Dimension(0, 330));
         setLayout(new java.awt.CardLayout());
+
+        optionsPanel.setMinimumSize(new java.awt.Dimension(200, 330));
         add(optionsPanel, "Options");
         add(pluginInfoPanel, "pluginsInfo");
     }// </editor-fold>//GEN-END:initComponents
